@@ -1,0 +1,218 @@
+* 3.4
+** [Pro] [Support] Added ~args.inputs.finger_(left|right)~.
+** [Support] Added ~Numeric#(sin|cos)_d~ (an alias to ~Numeric#(sin|cos)~). The Numeric is assumed to be in degrees.
+** [Support] Added ~Numeric#(sin|cos)_r~. The ~Numeric~ is assumed to be in radians.
+** [Support] [Tweetcart] Added ~cos~ (assumes degrees), ~cos_d~, ~cos_r~ (for radians), ~sin~ (assumes degrees), ~sin_d~ ~sin_r~ (for radians) to Tweetcart's top level api.
+** [Support] [Tweetcart] Added ~no_clear!(render_target_name)~ to Tweetcart's top level api which invokes ~args.outputs[render_target_name].clear_before_render = false~.
+** [Support] Added documentation for render order, starting a new project, ~gtk.calcspritebox~.
+** [Support] Added ~putz~ which is an alias to ~puts~ so it's less annoying to search and remove random ~puts~ statements you've sprinkled in your code.
+** [Support] [Pro] [iOS] Better comments related to ~devcert~ ~prodcert~ specification in ~ios_metadata.txt~.
+** [Samples] Added sample app that shows how to do dynamic lighting using ~blendmode_enum~ and ~render_targets~.
+   Location of sample app is =./samples/07_advanced_rendering/12_lighting=
+
+* 3.3
+** [Bugfix] ~fn.pretty_print~ correctly prints ~Arrays~ nested within a ~Hash~.
+** [Support] Added docs for ~args.easing.ease~.
+** [Pro] [Bugfix] iOS hotloading no longer continuously polls for a remote server if one isn't present on startup.
+** [Pro] [Bugfix] iOS production builds correctly sign binaries.
+** [Pro] [Support] Icons for iPad Pro 12.9 added.
+** [Pro] [Support] Log output redirects to iOS Device's internal console.
+** [Samples] Added sample app that simulates falling sand.
+   Location of sample app is =./samples/99_genre_simulation/sand_simulation=.
+
+* 3.2
+** [Bugfix] ~args.gtk.write_file~ now writes to the game directory in dev mode.
+** [Support] Added ~args.gtk.set_cursor path, dx, dy~ which can be used to set the in game cursor to a sprite.
+** [Support] In-game http server is now available in Pro, Indie, AND Standard tiers.
+   Take a look at the samples apps under =./samples/11_http=
+** [OSS] DragonRuby's dev server api has been open sourced.
+   All source code that has been open sourced is available locally under =./docs/docs.txt=.
+   You can also access documentation at [http://localhost:9001] while your game is running.
+** [Support] Added ~.mp3~ support to ~args.gtk.audio~.
+   Audio api sample is located at =/samples/07_advanced_audio/01_audio_mixer/=.
+
+* 3.1
+** [Bugfix] Fixed ~gtk.http_post_body~ fixed for MacOS Monterey (and any other OS'es that are using more current versions of libcurl).
+** [Bugfix] Fixed ~FrozenStringException~ when invoking ~puts nil~.
+
+* 3.0
+** [Summary]
+*** Major Release
+    This is the RTM (release to market) version of DragonRuby Game Toolkit 3.0.
+*** Occulus Quest/VR Support added to Pro License
+    You can watch the demo video at: [[DragonRuby VR][https://www.youtube.com/watch?v=I_s_kyOUgzM&ab_channel=RyanC.Gordon]]
+
+    DragonRuby Game Toolkit Pro license holders now have access to DragonRuby Game Toolit - VR. Go to http://dragonruby.org to
+    download. The price of the Pro license has been increased to $128 per year. Anyone who currently has a Pro subscription will be
+    grandfathered in with their current subscription price and will *NOT* see a price increase *EVER*.
+*** Indie Subscription Tier
+    With the addition of VR capabilities to the Pro tier. A new Indie tier has been
+    created (which is cheaper than a Pro license). Here is the breakdown of
+    features between each Tier:
+
+    | Standard           | Indie                | Pro + VR                                  |
+    |--------------------+----------------------+-------------------------------------------|
+    | OSX                | OSX                  | OSX                                       |
+    | Windows            | Windows              | Windows                                   |
+    | Linux              | Linux                | Linux                                     |
+    | Raspberry Pi       | Raspberry Pi         | Raspberry Pi                              |
+    | Web Assembly       | Web Assembly         | Web Assembly                              |
+    | Web-based REPL     | Web-based REPL       | Web-based REPL                            |
+    | Itch.io Automation | Itch.io Automation   | Itch.io Automation                        |
+    | -                  | C Extensions         | C Extensions                              |
+    | -                  | Sound Synthesis      | Sound Synthesis                           |
+    | -                  | In-game Webserver    | In-game Webserver                         |
+    | -                  | Bytecode Compilation | Bytecode Compilation                      |
+    | -                  | -                    | iOS                                       |
+    | -                  | -                    | Android                                   |
+    | -                  | -                    | Oculus Quest / VR Capabilities            |
+    | -                  | -                    | MP4 Replay Export                         |
+    | -                  | -                    | Coming Soon: Triangle Primitive Rendering |
+    | -                  | -                    | Coming Soon: HD Mode                      |
+    | -                  | -                    | Coming Soon: All Screen Mode              |
+    | -                  | -                    | Coming Soon: Portrait Orientation         |
+
+*** Sample Apps
+    Quite a few sample apps have been added which cover Mario style
+    platforming, Oculus Quest VR samples, 3D math concepts, advanced logging concepts, and
+    rendering labels inside of ~render_targets~.
+
+** [MAJOR] This is a major release of DragonRuby Game Toolkit
+   This is a major release of DragonRuby Game Toolkit. It supports Ruby 3.0 language features
+   and contains apis that are anywhere from 30% to 200% faster.
+
+   Even though there are breaking changes, the exceptions that may occur
+   should be fairly straightforward to fix. If you need help, come to the DragonRuby
+   Discord Server: http://discord.dragonruby.org and we'll help you upgrade.
+** [Samples]
+*** New 3D sample app has been added that shows how to perform ~Matrix~ transforms.
+    Location: =./samples/99_genre_3d/03_yaw_pitch_roll=.
+*** New Performance based sample app has been added that shows how to use ~Struct~.
+    Location: =./samples/09_performance/01_sprites_as_struct=.
+*** New ~render_target~ sample app has been added that shows how to rotate a label using a ~render_target~.
+    Location: =./samples/07_advanced_rendering/00_rotating_label=
+*** New Topdown RPG sample app has been added that replicates the casino room in Legend of Zelda.
+    Location: =./samples/99_genre_rpg_topdown/topdown_casino=
+*** New Platforming sample app has been added that breaks down jumping mechanics like in Super Mario Bros.
+    Location: =./samples/99_genre_mario/01_jumping=
+*** New Platforming sample app has been added that breaks down collision mechanics like in Super Mario Bros.
+    Location: =./samples/99_genre_mario/01_jumping_and_collisions=
+*** New Advanced Debugging sample app has been added that shows off DR's new logging capabilities.
+    Location: =./samples/10_advanced_debugging/00_logging/app/main.rb=
+** [Support]
+*** [Pro] Embedded http server now supports IPv6.
+*** [Pro] Ruby array C Extension generation.
+*** [Performance] ~Hash~ value assignment is 16x faster. Rendering using ~Hashes~ is 10x faster.
+    This deficiency exists in mRuby and has been optimized in DragonRuby.
+
+    Because of this change, the following code is 16x faster:
+    #+begin_src ruby
+      some_hash = {}
+      some_hash[:a] ||= :some_value
+    #+end_src
+
+    In the event of a missing key, the execution speed is also 16x faster:
+    #+begin_src ruby
+      some_hash = { a: 10 }
+      some_hash[:b] # nil, 16x faster
+      some_hash[:a] # no speed change/already fast
+    #+end_src
+*** Labels can support larger font sizes.
+*** Structs can be used with ~args.outputs~.
+*** ~gtk.benchmark~ is a bit more accurate.
+*** Added ~gtk.docs_benchmark~.
+*** Moved =./exceptions= and  =./console_history.txt= under =./logs=.
+*** Rendering performance improved for ~OpenEntity~.
+*** New logging apis have been added.
+*** Added ~args.gtk.version_indie?~ for the new Indie tier.
+** [Bugfix]
+*** Labels no longer shift vertically when the screen is resized.
+*** ~args.inputs.mouse.wheel~ reports the correct direction on non Mac machines.
+*** ~dragonruby-httpd~ works with Chrome.
+*** Crashes related to unsupported Korean keyboard events on MacOS have been resolved. Thank you podo@discord for troubleshooting.
+*** Fixed malformed http content for ~args.gtk.http_post_body~.
+*** Crashes related to headless unit tests have been fixed.
+** [MAJOR]
+*** [SAFE] Ruby 3.0 language features are now available. The new syntax should be compatible with Ruby 2.0.
+*** [SAFE] Except to see anywhere from 20% to 200% boost in performance overall.
+*** [SAFE] [DIVERGENT] DragonRuby's Runtime returns a ~Float~ for integer division (retaining mRuby 2.x behavior).
+    In mRuby 3.0, ~1/2~ would return ~0 (Int)~. In the DragonRuby Runtime, ~1/2~ returns ~0.5 (Float)~. Use ~Numeric#idiv~ for
+    integer division.
+*** [SAFE] [DIVERGENT] DragonRuby's Runtime retained ~rand~ generation algorithms from mRuby 2.0.
+    Incorporating 3.0's RNG algorithm would have resulted in unnecessary breaking changes that would have invalidated replays
+    of existing games.
+*** [SAFE] [DIVERGENT] ~Hash~ in most cases will not discriminate between ~Float~ and ~Int~ keys (where the number after the decimal point is ~0~).
+    This was existing mRuby 2.0 behavior and was retained within this major release to avoid unnecessary breaking changes related to key lookup.
+*** [BREAKING] Mutation of a ~frozen~ instance with ~include~ or ~extend~ throws an exception (in mRuby 2.0 this behavior did not occur).
+    Helpful error messages have been added where this type of mutation is most likely to happen.
+*** [BREAKING] Arithmetic and comparison operations no longer attempt to coerce/infer types.
+    You will receive exceptions because of this. General troubleshooting tips for these exceptions:
+    1. Carefully read the ~backtrace~ for ~Exceptions~ that are thrown (come to our Discord if you need help).
+    2. Make sure all references to ~args.state~ have been initialized to a default value.
+    3. Audit ~Int/Float~ operations to make sure they are operating on variables
+       that have been initialized with a default value.
+    4. Audit ~String~ operations to make sure they are operating on variables
+       that have been initialized with a default value.
+    5. Audit ~Enumerable~ operations to make sure they are operating on variables
+       that have been initialized to a default value.
+    Special thanks to erquint@discord, leviondiscord@discord, and danhealy@discord for continuing to raise
+    debugging concerns with respect to arithmetic/implicit coercion.
+*** [BREAKING] DragonRuby's "Level 1" Runtime has been updated to mRuby 3.0.
+    This is a major release of DragonRuby Game Toolkit. The breaking changes should be minimal, but unfortunately do exist.
+    Please report issues in our Discord and we will get them resolved right away: http://discord.dragonruby.org (mention @amirrajan).
+
+    A special thank you to podo@discord, hiro_r_b@discord, kfischer_okarin@discord, and leviondiscord@discord for troubleshooting.
+
+    A full explanation of DragonRuby's Multilevel Runtime Architecture can be found here: http://docs.dragonruby.org/#----what-is-dragonruby-
+    Please read through it so you have a better understanding of how DragonRuby is different than other Ruby runtimes.
+    It's VERY IMPORTANT to educate yourself on these differentiators. Especially if you find yourself being asked:
+    #+begin_quote
+      Why are you using Ruby to build games? Ruby is slow.
+    #+end_quote
+*** [SOFT BREAK] In a small subset of situations (such as with frozen objects), ~Hash~ keys *will* differentiate between ~Float~ and ~Int~ keys.
+    This is new behavior in mRuby 3.0, so be cognizant of this subtlety if you receive an exception.
+    The following works in mRuby 2.0:
+    #+begin_src ruby
+      def tick args
+        sample_hash = { 3.0 => "float value resolved", 4 => "int value resolved" }
+        puts sample_hash[3.0] # float value resolved
+        puts sample_hash[3]   # float value resolved
+
+        puts sample_hash[4.0] # int value resolved
+        puts sample_hash[4]   # int value resolved
+      end
+    #+end_src
+    But in some instances, it may not work in 3.0:
+    #+begin_src ruby
+      def tick args
+        sample_hash = { 3.0 => "float value resolved", 4 => "int value resolved" }
+        puts sample_hash[3.0] # float value resolved
+        puts sample_hash[3]   # might return nil
+
+        puts sample_hash[4.0] # might return nil
+        puts sample_hash[4]   # int value resolved
+      end
+    #+end_src
+    If you know ahead of time if your keys are ~Int~s. Be sure to invoke ~.to_i~ on any keys that may have been
+    converted into a ~Float~ (especially when deserializing data from disk).
+** [Pro] [Bugfix]
+*** [Pro] Fixed Android bundling targeting Dalvik.
+*** [Pro] iOS Wizard failed to stage correctly on a brand new project. This has been resolved.
+*** [Pro] Auto discovering iOS development/distribution certificates was problematic and must now be explicitly defined.
+    =mygame/metadata/ios_metadata.txt= now requires the ~devcert~ and ~prodcert~ config values. Here is an example template:
+    #+begin_src txt
+      # ios_metadata.txt is used by the Pro version of DragonRuby Game Toolkit to create iOS apps.
+      # Information about the Pro version can be found at: http://dragonruby.org/toolkit/game#purchase
+
+      # teamname needs to be set to your assigned team id which can be found at https://developer.apple.com/account/#/membership/L7H57V9CRD
+      teamid=
+      # appid needs to be set to your application identifier which can be found at https://developer.apple.com/account/resources/identifiers/list
+      appid=
+      # appname is the name you want to show up underneath the app icon on the device
+      appname=
+
+      # devcert is the certificate to use for development/deploying to your local device
+      devcert=
+      # prodcert is the certificate to use for distribution to the app store
+      prodcert=
+    #+end_src
