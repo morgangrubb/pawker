@@ -23,7 +23,7 @@ def tick args
     # Find all bugs in range of the cursor and scatter them
     args.state.bugs
       .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.nokia.mouse, 25) }
-      .scatter(args)
+      .scatter(args, args.nokia.mouse)
   end
 
   if args.inputs.keyboard.space
@@ -38,7 +38,7 @@ def tick args
     # Scatter any bugs who saw this happen
     args.state.bugs
       .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius * 4) }
-      .scatter(args)
+      .scatter(args, args.state.reticle.centre)
   end
 
   args.state.reticle.update(args)

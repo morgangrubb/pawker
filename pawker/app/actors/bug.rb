@@ -43,7 +43,7 @@ class Actors
       }
     end
 
-    def scatter(args)
+    def scatter(args, from_point)
       @mode = {
         name: :walking,
         ticks_per_frame: 12 + rand(12).to_i,
@@ -51,7 +51,7 @@ class Actors
       }
 
       # Scatter from the mouse point
-      angle = args.geometry.angle_from(args.nokia.mouse, as_centre) + 90
+      angle = args.geometry.angle_from(from_point, as_centre) + 90
 
       # If the difference is >180 degrees then we're going the wrong way to get to our new heading
       if @position[:angle] - angle < -180

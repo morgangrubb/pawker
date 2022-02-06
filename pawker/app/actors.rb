@@ -26,7 +26,11 @@ class Actors
     @actors.each { |actor| actor.stop(args) }
   end
 
-  def scatter(args)
+  def scatter(args, from_point)
+    @actors.each { |actor| actor.scatter(args, from_point) }
+  end
+
+  def splat(args)
     @actors.each { |actor| actor.scatter(args) }
   end
 
