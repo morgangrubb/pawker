@@ -33,17 +33,30 @@ class Actors
       end
     end
 
-    def start(args)
-      generate_non_colliding_start_position(args)
-      @mode = {
-        name: :readying,
-        ticks_remaining: 100 + rand(200).to_i,
-        ticks_per_frame: 12 + rand(12).to_i,
-        since: args.state.tick_count
-      }
+    def start(args, meander: false)
+      if meander
+        generate_non_colliding_start_position(args, wall: :right)
+        @position[:y] = (NOKIA_HEIGHT - @position[:h]) * 0.5
+        @target[:y] = @position[:y]
+        @target[:x] = (NOKIA_WIDTH - 2.5 * @position[:w])
+        @mode = {
+          name: :meandering,
+          ticks_remaining: 100 + rand(200).to_i,
+          ticks_per_frame: 12 + rand(12).to_i,
+          since: args.state.tick_count
+        }
+      else
+        generate_non_colliding_start_position(args)
+        @mode = {
+          name: :readying,
+          ticks_remaining: 100 + rand(200).to_i,
+          ticks_per_frame: 12 + rand(12).to_i,
+          since: args.state.tick_count
+        }
+      end
     end
 
-    def scatter(args, from_point)
+    def scatter(args, from_point, stop: false)
       @mode = {
         name: :walking,
         ticks_per_frame: 12 + rand(12).to_i,
@@ -64,6 +77,8 @@ class Actors
         angle: Ease.new(from: @position[:angle], to: angle, ticks: 10),
         speed: Ease.new(from: @position[:speed], to: 80 + rand(70), ticks: 20)
       })
+
+      @stop_after_offscreen = stop
     end
 
     def stop(args)
@@ -71,6 +86,10 @@ class Actors
       @mode = {
         name: :purgatory
       }
+    end
+
+    def stopped?
+      @mode[:name] == :purgatory
     end
 
     def render(args)
@@ -85,7 +104,7 @@ class Actors
         @position[:tile_x] = 0 + (tile_index * WIDTH)
         @position[:tile_y] = 0
 
-        if @mode[:name] == :readying
+        if @mode[:name] == :readying || @mode[:name] == :meandering
           @position[:path] = "sprites/idle1.png"
         else
           @position[:path] = "sprites/walk.png"
@@ -135,7 +154,7 @@ class Actors
       when :purgatory
         @mode[:ticks_remaining] -= 1 if @mode[:ticks_remaining]
 
-      when :readying
+      when :readying, :meandering
         # Keep counting down time until we start moving
         @mode[:ticks_remaining] -= 1
         update_position(args)
@@ -213,17 +232,17 @@ class Actors
         # If off-screen switch to purgatory for a while
         if !@position.intersect_rect?(NOKIA_SCREEN)
           stop(args)
-          @mode[:ticks_remaining] = rand(80)
+          @mode[:ticks_remaining] = rand(80) unless @stop_after_offscreen
         end
       end
     end
 
     # This can take quite a few goes to figure out a non-colliding starting
     # position but we're just going to be okay with that.
-    def generate_non_colliding_start_position(args)
+    def generate_non_colliding_start_position(args, wall: nil)
       @target =
         while true do
-          target = generate_start_target(args)
+          target = generate_start_target(args, wall: wall)
           break target unless controller.collision?(target.slice(*POSITION_KEYS))
         end
 
@@ -251,10 +270,9 @@ class Actors
     #
     # This is so that the bug slowly approaches the edge of the screen to give
     # warning about where they're coming from before they take off.
-    def generate_start_target(args)
+    def generate_start_target(args, wall: nil)
       random =
-        case [:left, :top, :right, :bottom].sample
-        # case [:top, :bottom].sample
+        case wall || [:left, :top, :right, :bottom].sample
         when :left
           {
             x: -1 * (rand(WIDTH / 2) + WIDTH / 2),

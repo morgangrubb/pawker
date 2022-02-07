@@ -9,7 +9,7 @@ class Actors
       @h = 23
       @x = (NOKIA_WIDTH - @w) * 0.5
       @y = (NOKIA_HEIGHT - @h) * 0.5
-      @path = "sprites/reticle.png"
+      @path = "sprites/reticle2.png"
       @radius = 10
     end
 

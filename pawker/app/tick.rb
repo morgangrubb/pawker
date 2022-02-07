@@ -1,53 +1,64 @@
 def tick args
-  $debug ||= Debug.new
+  args.state.game_state ||= State.new(args)
 
-  args.state.reticle ||= Actors::Reticle.new
-  args.state.splats ||= Actors.new(klass: Actors::Splat)
+  args.state.game_state.render(args)
 
-  if !args.state.bugs
-    args.state.bugs = Actors.new(klass: Actors::Bug)
-    args.state.bugs.add(10)
-    args.state.bugs.start(args)
-  end
+  # $debug ||= Debug.new
 
-  if args.inputs.mouse.click && !$debug.click?(args)
+  # args.state.reticle ||= Actors::Reticle.new
+  # args.state.paw ||= Actors::Paw.new
+  # args.state.splats ||= Actors.new(klass: Actors::Splat)
 
-    # Find any bugs that are under the cursor and splat them
-    args.state.bugs
-      .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.nokia.mouse, 8) }
-      .actors.each do |bug|
-        args.state.splats.add(1, **bug.position)
-        bug.start(args) # Reset offscreen
-      end
+  # if !args.state.bugs
+  #   args.state.bugs = Actors.new(klass: Actors::Bug)
+  #   args.state.bugs.add(10)
+  #   args.state.bugs.start(args)
+  # end
 
-    # Find all bugs in range of the cursor and scatter them
-    args.state.bugs
-      .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.nokia.mouse, 25) }
-      .scatter(args, args.nokia.mouse)
-  end
+  # if args.inputs.mouse.click && !$debug.click?(args)
 
-  if args.inputs.keyboard.space
-    # Splat bugs directly under the reticle
-    args.state.bugs
-      .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
-      .actors.each do |bug|
-        args.state.splats.add(1, **bug.position)
-        bug.start(args) # Reset offscreen
-      end
+  #   # Find any bugs that are under the cursor and splat them
+  #   args.state.bugs
+  #     .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.nokia.mouse, 8) }
+  #     .actors.each do |bug|
+  #       args.state.splats.add(1, **bug.position)
+  #       bug.start(args) # Reset offscreen
+  #     end
 
-    # Scatter any bugs who saw this happen
-    args.state.bugs
-      .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius * 4) }
-      .scatter(args, args.state.reticle.centre)
-  end
+  #   # Find all bugs in range of the cursor and scatter them
+  #   args.state.bugs
+  #     .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.nokia.mouse, 25) }
+  #     .scatter(args, args.nokia.mouse)
+  # end
 
-  args.state.reticle.update(args)
+  # if args.inputs.keyboard.space && args.state.paw.available?
+  #   # Target the paw on the cursor centre
+  #   args.state.paw.attack(args, args.state.reticle.centre)
 
-  args.state.bugs.render(args)
-  args.state.splats.render(args)
-  args.nokia.sprites << args.state.reticle
+  #   # Splat bugs directly under the reticle
+  #   args.state.bugs
+  #     .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
+  #     .actors.each do |bug|
+  #       args.state.splats.add(1, **bug.position)
+  #       bug.start(args) # Reset offscreen
+  #     end
 
-  $debug.render(args)
+  #   # Scatter any bugs who saw this happen
+  #   args.state.bugs
+  #     .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius * 4) }
+  #     .scatter(args, args.state.reticle.centre)
+  # end
+
+  # args.state.reticle.update(args)
+  # args.state.paw.update(args)
+
+  # args.state.bugs.render(args)
+  # args.state.splats.render(args)
+
+  # args.nokia.sprites << args.state.reticle
+  # args.nokia.sprites << args.state.paw
+
+  # $debug.render(args)
 end
 
 def hello_world args

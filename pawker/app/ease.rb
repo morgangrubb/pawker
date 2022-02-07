@@ -1,11 +1,11 @@
 class Ease
   attr_reader :from, :to, :ticks, :mode, :start_tick
 
-  def initialize(from:, to:, ticks:, mode: :quad)
+  def initialize(from:, to:, ticks:, mode: :quad, start_tick: nil)
     @from = from
     @to = to
     @ticks = ticks
-    @start_tick = nil
+    @start_tick = start_tick
     @mode = mode
   end
 
