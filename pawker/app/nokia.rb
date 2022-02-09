@@ -172,8 +172,6 @@ module GTK
         end
       end
 
-      puts @args.render_target(:nokia).solids
-
       @args.render_target(:nokia)
            .borders
            .each do |s|

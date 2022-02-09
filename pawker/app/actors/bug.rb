@@ -9,6 +9,7 @@ class Actors
     NOKIA_SCREEN = { w: NOKIA_WIDTH, h: NOKIA_HEIGHT, x: 0, y: 0 }
 
     attr_accessor :index, :controller, :position, :target, :mode
+    attr_reader :card
 
     def initialize(index:, controller:, deck: nil)
       @index = index

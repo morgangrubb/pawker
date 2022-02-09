@@ -2,14 +2,18 @@ module Screens
   class Game < Screen
     MAX_SWATS = 5
 
-    def initialize(args, **kwargs)
+    def initialize(args, deck:, hand_to_beat:, **kwargs)
       super(args, **kwargs)
 
       args.state.reticle ||= Actors::Reticle.new
       args.state.paw ||= Actors::Paw.new
 
-      @deck = Deck.new
-      @deck.shuffle!
+      @deck = deck
+      @hand_to_beat = hand_to_beat
+
+      @hand = Hand.new
+      @hand_to_beat.x = 1
+      @hand_to_beat.y = 1
 
       @splats = Actors.new(klass: Actors::Splat)
 
@@ -48,6 +52,10 @@ module Screens
           .actors.each do |bug|
             @splats.add(1, **bug.position)
 
+            if bug.card
+              @hand.add(bug.card)
+            end
+
             if @complete
               bug.stop(args)
             else
@@ -75,6 +83,9 @@ module Screens
       @splats.render(args)
 
       args.nokia.sprites << args.state.reticle
+
+      @hand.tick(args)
+
       args.nokia.sprites << args.state.paw
     end
   end

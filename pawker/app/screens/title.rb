@@ -10,9 +10,12 @@ module Screens
       @deck = Deck.new
       @deck.shuffle!
       @hand_to_beat = Hand.new
-      @hand_to_beat.x = 0
-      @hand_to_beat.y = 0
       5.times { @hand_to_beat.add(@deck.draw) }
+      # @hand_to_beat.ease_x = Ease.new(from: @hand_to_beat.w * -1, to: 1, ticks: 60, mode: :out_back)
+      # @hand_to_beat.y = 1
+
+      @hand_to_beat.x = 1
+      @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.h * -1, to: 1, ticks: 20, mode: :out_back)
 
       @splats = Actors.new(klass: Actors::Splat)
       @bugs = Actors.new(klass: Actors::Bug)
@@ -61,6 +64,8 @@ module Screens
 
           @background.withdraw!(args)
 
+          @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.y, to: @hand_to_beat.h * -1, ticks: 20, mode: :in_back)
+
           @start_game = true
         end
       elsif !@interactive && @splats.any? && !@splats.actors.first.exists?
@@ -70,16 +75,16 @@ module Screens
       @background.update(args)
       args.nokia.sprites << @background
 
-      # @bugs.render(args)
-      # @splats.render(args)
+      @bugs.render(args)
+      @splats.render(args)
 
-      # args.state.reticle.update(args)
-      # args.nokia.sprites << args.state.reticle
+      args.state.reticle.update(args)
+      args.nokia.sprites << args.state.reticle
 
-      # args.state.paw.update(args)
-      # args.nokia.sprites << args.state.paw
+      @hand_to_beat.tick(args)
 
-      @hand_to_beat.tick(args, box: true)
+      args.state.paw.update(args)
+      args.nokia.sprites << args.state.paw
     end
   end
 end
