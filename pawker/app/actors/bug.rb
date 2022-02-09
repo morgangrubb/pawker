@@ -10,16 +10,17 @@ class Actors
 
     attr_accessor :index, :controller, :position, :target, :mode
 
-    def initialize(index:, controller:)
+    def initialize(index:, controller:, deck: nil)
       @index = index
       @controller = controller
+      @deck = deck
       @mode = {
         name: :purgatory
       }
     end
 
     def exists?
-      !@position.nil?
+      !@position.nil? && @mode[:name] != :purgatory
     end
 
     def describe(args)
@@ -53,10 +54,13 @@ class Actors
           ticks_per_frame: 12 + rand(12).to_i,
           since: args.state.tick_count
         }
+        @card = @deck.draw if @deck
       end
     end
 
     def scatter(args, from_point, stop: false)
+      return unless @position
+
       @mode = {
         name: :walking,
         ticks_per_frame: 12 + rand(12).to_i,

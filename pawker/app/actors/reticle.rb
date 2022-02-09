@@ -21,7 +21,6 @@ class Actors
     end
 
     def ease_to_start!(args, ticks: 60)
-      puts({ from: @x, to: NOKIA_WIDTH - @w - 1, ticks: ticks, start_tick: args.state.tick_count, mode: :out_back })
       @ease_x = Ease.new(from: @x, to: NOKIA_WIDTH - @w - 1, ticks: ticks, start_tick: args.state.tick_count, mode: :out_back)
       @ease_y = Ease.new(from: @y, to: 1, ticks: ticks, start_tick: args.state.tick_count, mode: :out_back)
     end

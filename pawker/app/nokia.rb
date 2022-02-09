@@ -134,6 +134,9 @@ module GTK
            .labels
            .each do |l|
         l.y  += 1
+
+        next unless l.r.nil?
+
         if (l.a || 255) > 128
           l.r = 67
           l.g = 82
@@ -157,6 +160,8 @@ module GTK
       @args.render_target(:nokia)
            .solids
            .each do |s|
+        next unless s.r.nil?
+
         if (s.a || 255) > 128
           s.r = 67
           s.g = 82
@@ -167,9 +172,13 @@ module GTK
         end
       end
 
+      puts @args.render_target(:nokia).solids
+
       @args.render_target(:nokia)
            .borders
            .each do |s|
+        next unless s.r.nil?
+
         if (s.a || 255) > 128
           s.r = 67
           s.g = 82
@@ -188,6 +197,8 @@ module GTK
         l.y2 += 1 if l.y1 != l.y2
         l.x2 += 1 if l.x1 != l.x2
 
+        next unless l.r.nil?
+
         if (l.a || 255) > 128
           l.r = 67
           l.g = 82
@@ -204,15 +215,15 @@ module GTK
         w: NOKIA_ZOOMED_WIDTH  + 2,
         h: NOKIA_ZOOMED_HEIGHT + 2,
         r: 128, g: 128, b: 128
-      }
+      }.merge(DARK_COLOUR_RGB)
 
 
       @args.outputs.background_color = [199, 240, 216]
 
-      @args.outputs.solids << [0, 0, NOKIA_X_OFFSET, 720]
-      @args.outputs.solids << [0, 0, 1280, NOKIA_Y_OFFSET]
-      @args.outputs.solids << [NOKIA_X_OFFSET + NOKIA_ZOOMED_WIDTH, 0, NOKIA_X_OFFSET, 720]
-      @args.outputs.solids << [0, NOKIA_Y_OFFSET.from_top, 1280, NOKIA_Y_OFFSET]
+      @args.outputs.solids << [0, 0, NOKIA_X_OFFSET, 720, DARK_COLOUR_RGB[:r], DARK_COLOUR_RGB[:g], DARK_COLOUR_RGB[:b], DARK_COLOUR_RGB[:a]]
+      @args.outputs.solids << [0, 0, 1280, NOKIA_Y_OFFSET, DARK_COLOUR_RGB[:r], DARK_COLOUR_RGB[:g], DARK_COLOUR_RGB[:b], DARK_COLOUR_RGB[:a]]
+      @args.outputs.solids << [NOKIA_X_OFFSET + NOKIA_ZOOMED_WIDTH, 0, NOKIA_X_OFFSET, 720, DARK_COLOUR_RGB[:r], DARK_COLOUR_RGB[:g], DARK_COLOUR_RGB[:b], DARK_COLOUR_RGB[:a]]
+      @args.outputs.solids << [0, NOKIA_Y_OFFSET.from_top, 1280, NOKIA_Y_OFFSET, DARK_COLOUR_RGB[:r], DARK_COLOUR_RGB[:g], DARK_COLOUR_RGB[:b], DARK_COLOUR_RGB[:a]]
 
       @args.outputs
            .sprites << { x: NOKIA_X_OFFSET,

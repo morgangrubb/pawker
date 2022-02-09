@@ -1,17 +1,27 @@
 module Screens
-  class Title
-    def initialize(args)
+  class Title < Screen
+    def initialize(args, **kwargs)
+      super(args, **kwargs)
+
       args.state.paw ||= Actors::Paw.new
       args.state.reticle ||= Actors::Reticle.new
       args.state.reticle.ease_to_start!(args)
 
-      args.state.title = {}
-      args.state.title.splats = Actors.new(klass: Actors::Splat)
-      args.state.title.bugs = Actors.new(klass: Actors::Bug)
-      args.state.title.bugs.add(1)
-      args.state.title.bugs.start(args, meander: :true)
+      @deck = Deck.new
+      @deck.shuffle!
+      @hand_to_beat = Hand.new
+      @hand_to_beat.x = 0
+      @hand_to_beat.y = 0
+      5.times { @hand_to_beat.add(@deck.draw) }
 
-      args.state.title.background = Actors::Background.new
+      @splats = Actors.new(klass: Actors::Splat)
+      @bugs = Actors.new(klass: Actors::Bug)
+      @bugs.add(1)
+      @bugs.start(args, meander: :true)
+
+      @background = Actors::Background.new
+
+      @interactive = true
 
       # TODO: Set a start position off screen with a target on the right half
       #   of the screen and the mode set to meandering so the bug just twitches
@@ -24,54 +34,52 @@ module Screens
       # args.state.bugs.actors.first
       #
 
-      @start_game = false
+      # @start_game = false
     end
 
-    def start_other_screen(args)
-      :game if @start_game
-    end
+    def tick(args, state)
+      return unless running?
 
-    def complete?(args)
-      args.state.title.background.withdrawn?(args) && args.state.title.splats.any? && !args.state.title.splats.actors.first.exists?
-    end
-
-    def render(args)
-      if args.inputs.keyboard.space && args.state.paw.available?
+      if @interactive && args.inputs.keyboard.space && args.state.paw.available?
         # Target the paw on the cursor centre
         args.state.paw.attack(args, args.state.reticle.centre)
 
         # Splat bugs directly under the reticle
         splatted =
-          args.state.title.bugs
+          @bugs
             .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
 
         if splatted.any?
+          state.start(args, :game, deck: @deck, hand_to_beat: @hand_to_beat)
+
+          @interactive = false
+
           splatted.actors.each do |bug|
-            args.state.title.splats.add(1, **bug.position)
+            @splats.add(1, **bug.position)
             bug.stop(args)
           end
 
-          args.state.title.background.withdraw!(args)
+          @background.withdraw!(args)
 
           @start_game = true
         end
+      elsif !@interactive && @splats.any? && !@splats.actors.first.exists?
+        advance_phase!
       end
 
-      args.state.title.background.update(args)
-      args.nokia.sprites << args.state.title.background
+      @background.update(args)
+      args.nokia.sprites << @background
 
-      args.state.title.bugs.render(args)
-      args.state.title.splats.render(args)
+      # @bugs.render(args)
+      # @splats.render(args)
 
-      args.state.paw.update(args)
-      args.nokia.sprites << args.state.paw
+      # args.state.reticle.update(args)
+      # args.nokia.sprites << args.state.reticle
 
-      args.state.reticle.update(args)
-      args.nokia.sprites << args.state.reticle
-    end
+      # args.state.paw.update(args)
+      # args.nokia.sprites << args.state.paw
 
-    def teardown(args)
-      args.state.title = nil
+      @hand_to_beat.tick(args, box: true)
     end
   end
 end

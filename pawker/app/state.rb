@@ -1,59 +1,31 @@
 class State
+  attr_reader :screens
+
   def initialize(args)
     @mode = :game
     @screen = nil
 
-    start(args, :title)
+    @screens = []
   end
 
-  # def switch(args, mode)
-  #   case mode
-  #   when :title
-  #     @title_screen = Screens::Title.new(args)
-  #   when :game
-  #     @game_screen = Screens::Game.new(args)
-  #   end
-  # end
+  def start(args, screen, **kwargs)
+    new_screen =
+      case screen
+      when :card_test
+        Screens::CardTest.new(args, **kwargs)
+      when :game
+        Screens::Game.new(args, **kwargs)
+      when :title
+        Screens::Title.new(args, **kwargs)
+      end
 
-  def start(args, screen)
-    # puts "start: #{screen}"
-    case screen
-    when :game
-      @game_screen ||= Screens::Game.new(args)
-    when :title
-      @title_screen ||= Screens::Title.new(args)
-    end
+    @screens << new_screen
   end
 
-  def render(args)
-    render_title_screen(args)
-    render_game_screen(args)
-  end
-
-  def render_title_screen(args)
-    return unless @title_screen
-
-    @title_screen.render(args)
-
-    start(args, @title_screen.start_other_screen(args))
-
-    if @title_screen.complete?(args)
-
-      @title_screen.teardown(args)
-      @title_screen = nil
-    end
-  end
-
-  def render_game_screen(args)
-    return unless @game_screen
-
-    @game_screen.render(args)
-
-    start(args, @game_screen.start_other_screen(args))
-
-    if @game_screen.complete?(args)
-      @game_screen.teardown(args)
-      @game_screen = nil
+  def tick(args)
+    @screens.each do |screen|
+      screen.tick(args, self)
+      @screens.delete(screen) if screen.complete?
     end
   end
 end
