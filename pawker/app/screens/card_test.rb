@@ -7,10 +7,6 @@ module Screens
       # @card = @deck.draw
     end
 
-    def advance_phase?(args)
-      false
-    end
-
     def tick(args, state)
       if running?
         # On space, start the next screen

@@ -64,8 +64,8 @@ class Card
   end
 
   def <=> other
-    return 0 if rank == other.rank && suit == other.suit
-    return 1 if rank >= other.rank && suit >= other.suit
+    return 0 if rank == other.rank #&& suit == other.suit
+    return 1 if rank >= other.rank #&& suit >= other.suit
     return -1
   end
 

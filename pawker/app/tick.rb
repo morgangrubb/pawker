@@ -5,6 +5,7 @@ def tick args
 
     args.state.game_state = State.new(args)
     args.state.game_state.start(args, :title)
+    # args.state.game_state.start(args, :ranks_test)
   end
 
 

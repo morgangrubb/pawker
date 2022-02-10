@@ -21,11 +21,25 @@ class Hand
   end
 
   def add(card)
+    @rank = nil
     @cards << card
   end
 
+  def rank
+    @rank ||= Ranks.best(self)
+  end
+
   def remove(card)
+    @rank = nil
     @cards.delete!(card)
+  end
+
+  def serialize
+    { cards: @cards.map(&:short) }
+  end
+
+  def inspect
+    serialize.to_s
   end
 
   def combinations
@@ -66,13 +80,38 @@ class Hand
     x = @x + 1
     y = @y + 1
 
-    cards.each do |card|
-      card.x = x
-      card.y = y
+    # Relevant cards are splayed, kickers are tucked
+    splayed =
+      if rank.relevant_cards.any?
+        rank.relevant_cards.each_with_index.map do |card, i|
+          card.y = y
+          card.x = x - i
 
+          x += card.w - 1
+
+          card
+        end
+      else
+        []
+      end
+
+    tucked =
+      if rank.kickers.any?
+        rank.kickers.each_with_index.map do |card, i|
+          card.y = y
+          card.x = x - card.w + 3
+
+          x += 2
+
+          card
+        end
+      else
+        []
+      end
+
+    (splayed + tucked).reverse.each do |card|
+      # puts card.inspect
       args.nokia.sprites << card
-
-      x += card.w + 1
     end
   end
 
@@ -81,7 +120,17 @@ class Hand
   def width_of_cards
     return 0 if cards.none?
 
-    cards.map { |card| card.w + 1 }.reduce(&:+) - 1
+    # Relevant cards are splayed, kickers are tucked
+    splayed_width =
+      if rank.relevant_cards.any?
+        rank.relevant_cards.map { |card| card.w }.reduce(&:+) - ((rank.relevant_cards.length - 1) * 2)
+      else
+        0
+      end
+
+    tucked_width = rank.kickers.length * 2
+
+    splayed_width + tucked_width + 1
   end
 
   def height_of_cards

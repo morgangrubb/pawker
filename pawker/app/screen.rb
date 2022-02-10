@@ -25,10 +25,6 @@ class Screen
     @phase = @phases.next
   end
 
-  def advance_phase?(args)
-    raise "TODO"
-  end
-
   def tick(args, state)
     raise "TODO"
   end

@@ -18,7 +18,11 @@ class Suit
   end
 
   def <=> other
-    return 0 if suit == other.suit
-    SUITS.index(suit) < SUITS.index(other.suit) ? 1 : -1
+    # return 0 if suit == other.suit
+    # SUITS.index(suit) < SUITS.index(other.suit) ? 1 : -1
+    #
+
+    # Suits aren't ranked in pawker
+    0
   end
 end

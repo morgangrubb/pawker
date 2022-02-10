@@ -1,5 +1,8 @@
 class Rank
+  include Comparable
+
   RANKS = [:ace, :king, :queen, :jack, :ten, :nine, :eight, :seven, :six, :five, :four, :three, :two]
+  NUMERIC = RANKS.reverse.each_with_index.inject({}) { |obj, (k, i)| obj[k] = i; obj }
   SHORT = {
     ace: "A",
     king: "K",
@@ -20,6 +23,10 @@ class Rank
 
   def initialize rank
     @rank = rank
+  end
+
+  def to_i
+    NUMERIC[rank]
   end
 
   def short
