@@ -176,7 +176,7 @@ module Ranks
       found = nil
 
       while true do
-        sorted = hand.cards.sort.reverse.slice(offset, 5)
+        sorted = hand.cards.uniq { |card| card.rank.rank }.sort.reverse.slice(offset, 5)
 
         if sorted[0].rank.to_i == sorted[1].rank.to_i + 1 &&
           sorted[1].rank.to_i == sorted[2].rank.to_i + 1 &&

@@ -41,7 +41,7 @@ module Screens
 
     def assert_equal(expected, value, message = nil)
       if expected != value
-        raise "#{message}\nExpected: #{expected}, got: #{value}"
+        raise "#{message}\nExpected: #{expected.inspect}, got: #{value.inspect}"
       end
     end
 
@@ -139,6 +139,12 @@ module Screens
       assert_true rank_low.valid?, "Straight should be found"
       assert_equal ["6C", "5C", "4C", "3C", "2C"], rank_low.relevant_cards.map(&:short)
       assert_true rank_low.kickers.empty?, "Straight has no kickers"
+
+      cards = Deck.new.pick("2C", "3C", "4C", "4H", "5H", "6H")
+      rank_middle = Ranks::Straight.new(Hand.new(cards: cards))
+      assert_true rank_middle.valid?, "Straight should be found"
+      assert_equal ["6H", "5H", "4H", "3C", "2C"], rank_middle.relevant_cards.map(&:short)
+      assert_true rank_middle.kickers.empty?, "Straight has no kickers"
 
       cards = Deck.new.pick(rank: [:nine, :ten, :jack, :queen, :king], suit: :club)
       cards += Deck.new.pick(rank: :ace, suit: :spade)

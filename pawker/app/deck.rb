@@ -20,7 +20,7 @@ class Deck
     @cards.shift
   end
 
-  def pick(rank: [], suit: [])
+  def pick(*shorts, rank: [], suit: [])
     ranks =
       if rank.is_a?(Array)
         rank
@@ -35,9 +35,15 @@ class Deck
         [suit]
       end
 
+    shorts = shorts.map(&:to_s).map(&:upcase)
+
     @cards.filter do |card|
-      (ranks.empty? || ranks.include?(card.rank.rank)) &&
-        (suits.empty? || suits.include?(card.suit.suit))
+      if shorts.any?
+        shorts.include?(card.short)
+      else
+        (ranks.empty? || ranks.include?(card.rank.rank)) &&
+          (suits.empty? || suits.include?(card.suit.suit))
+      end
     end
   end
 
