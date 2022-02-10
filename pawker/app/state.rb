@@ -15,6 +15,8 @@ class State
         Screens::CardTest.new(args, **kwargs)
       when :ranks_test
         Screens::RanksTest.new(args, **kwargs)
+      when :hands_test
+        Screens::HandsTest.new(args, **kwargs)
       when :game
         Screens::Game.new(args, **kwargs)
       when :title

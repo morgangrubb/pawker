@@ -8,14 +8,10 @@ module Screens
       args.state.reticle.ease_to_start!(args)
 
       @deck = Deck.new
-      # @deck.shuffle!
       cards = @deck.pick!(suit: [:heart, :diamond], rank: :two)
       cards += @deck.pick(suit: :spade, rank: [:nine, :six, :three])
       @hand_to_beat = Hand.new(cards: cards)
-      puts @hand_to_beat.rank.class
-      # 5.times { @hand_to_beat.add(@deck.draw) }
-      # @hand_to_beat.ease_x = Ease.new(from: @hand_to_beat.w * -1, to: 1, ticks: 60, mode: :out_back)
-      # @hand_to_beat.y = 1
+      @deck.shuffle!
 
       @hand_to_beat.x = 1
       @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.h * -1, to: 1, ticks: 20, mode: :out_back)

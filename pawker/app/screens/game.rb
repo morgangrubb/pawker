@@ -12,6 +12,7 @@ module Screens
       @hand_to_beat = hand_to_beat
 
       @hand = Hand.new
+      @hand.splay!
       @hand_to_beat.x = 1
       @hand_to_beat.y = 1
 
