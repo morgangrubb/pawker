@@ -4,7 +4,7 @@ module Scenes
 
     attr_reader :round
 
-    def initialize(args, round: 0, **kwargs)
+    def initialize(args, round:, hand_to_beat:, **kwargs)
       super(args, **kwargs)
 
       @round = round
@@ -19,13 +19,10 @@ module Scenes
       args.state.reticle.ease_to_start!(args)
 
       @deck = args.state.deck
-      @deck.reset!
-      @deck.shuffle!
 
-      @hand_to_beat = Hand.new(cards: @deck.pick!("2H", "2D"))
+      @hand_to_beat = hand_to_beat
       @hand_to_beat.x = 1
       @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.h * -1, to: 1, ticks: 20, mode: :out_back)
-      # raise "@hand_to_beat.h is nil" if @hand_to_beat.h.nil?
 
       @splats = Actors.new(klass: Actors::Splat)
       @bugs = Actors.new(klass: Actors::Bug)

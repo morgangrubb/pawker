@@ -58,7 +58,7 @@ class Deck
       if shorts.any?
         shorts.include?(card.short)
       else
-        (ranks.empty? || ranks.include?(card.rank.rank)) &&
+        (ranks.empty? || ranks.include?(card.rank.rank) || ranks.include?(card.rank.to_i)) &&
           (suits.empty? || suits.include?(card.suit.suit))
       end
     end

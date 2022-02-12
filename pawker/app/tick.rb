@@ -16,14 +16,34 @@ def tick args
 
     # Start the game
     args.state.scenes ||= []
-    args.state.scenes << Scenes::Title.new(args)
+
+    # Start at a specific level
+    # Progression.advance(args, round: 0)
+    # Progression.advance(args, round: 1, win: true)
+    # Progression.advance(args, round: 2, win: true)
+    # Progression.advance(args, round: 3, win: true)
+    # Progression.advance(args, round: 4, win: true)
+    # Progression.advance(args, round: 5, win: true)
+    # Progression.advance(args, round: 6, win: true)
+    # Progression.advance(args, round: 7, win: true)
 
     # Start at the round summary screen
     # args.state.scenes << Scenes::RoundSummary.new(args,
-    #   hand: Hand.new(cards: args.state.deck.pick("4H", "4C", "AS", "10D")),
+    #   hand: Hand.new(cards: args.state.deck.pick("AS", "10D")),
     #   hand_to_beat: Hand.new(cards: args.state.deck.pick("2H", "2S")),
-    #   round: 1
+    #   round: 0
     # )
+
+    # Test the game over screen
+    # args.state.scenes << Scenes::GameOver.new(args)
+
+    # Test the game won screen
+    # args.state.scenes << Scenes::Winner.new(args)
+
+    # Default entry point for the game
+    if args.state.scenes.empty?
+      Progression.start(args)
+    end
   end
 
   args.state.scenes.sort { |scene| scene.stack_order }.reverse.each do |scene|

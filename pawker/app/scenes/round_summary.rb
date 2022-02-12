@@ -63,7 +63,7 @@ module Scenes
       if @ticks_remaining
         @ticks_remaining = 0 if @interactive_after.complete?(args) && args.inputs.keyboard.space
 
-        if @ticks_remaining > 0 && !
+        if @ticks_remaining > 0
           @ticks_remaining -= 1
         elsif @ticks_remaining == 0
           @ticks_remaining = false
@@ -91,7 +91,8 @@ module Scenes
       end
 
       if @complete_timer&.complete?(args)
-        args.state.scenes << Scenes::Title.new(args, round: round + 1)
+        # TODO: Start this a few frames early
+        Progression.advance(args, win: hand > hand_to_beat, round: round)
         advance_phase!
       else
         @background_top.tick(args)
