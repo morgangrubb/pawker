@@ -31,7 +31,7 @@ class Sprite
 
   def serialize
     instance_variables.inject({}) do |memo, name|
-      memo[name] = instance_variable_get(name)
+      memo[name.to_s[1..-1].to_sym] = instance_variable_get(name)
       memo
     end
   end

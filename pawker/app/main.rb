@@ -16,6 +16,7 @@ require "app/scenes/title.rb"
 require "app/scenes/ranks_test.rb"
 require "app/scenes/hands_test.rb"
 require "app/sprite.rb"
+require "app/sprite_by_line.rb"
 require "app/label.rb"
 require "app/debug.rb"
 

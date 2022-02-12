@@ -9,6 +9,11 @@ module Scenes
 
       @round = round
 
+      if @round == 0
+        @title = SpriteByLine.new(path: "sprites/title.png", h: 14, w: 67, x: -67, y: NOKIA_HEIGHT - 14 - 2, delay: 1)
+        @title.ease_x = Ease.new(from: @title.x, to: 2, mode: :out_back, ticks: 60)
+      end
+
       args.state.paw ||= Actors::Paw.new
       args.state.reticle ||= Actors::Reticle.new
       args.state.reticle.ease_to_start!(args)
@@ -67,6 +72,8 @@ module Scenes
 
           @instructions.ease_y = Ease.new(from: @instructions.y, to: -48, ticks: 60, mode: :in_back)
 
+          @title.ease_x = Ease.new(from: @title.x, to: -67, ticks: 60)
+
           @start_game = true
         end
       elsif !@interactive && @splats.any? && !@splats.actors.first.exists?
@@ -85,6 +92,8 @@ module Scenes
       @hand_to_beat.tick(args)
 
       @instructions.tick(args)
+
+      @title.tick(args) if @title
 
       args.state.paw.update(args)
       args.nokia.sprites << args.state.paw

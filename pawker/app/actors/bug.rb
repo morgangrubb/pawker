@@ -121,7 +121,7 @@ class Actors
 
         args.nokia.sprites << @position.slice(*POSITION_KEYS)
 
-        if card && args.state.tick_count % 2 == 0
+        if card # && args.state.tick_count % 2 == 0
           # TODO: Put the card behind the bug
           card.y = @position[:y] - card.h
           card.x = @position[:x]

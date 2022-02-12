@@ -1,7 +1,7 @@
 class Ease
   include Serializable
 
-  attr_reader :from, :to, :ticks, :mode, :start_tick, :defer
+  attr_accessor :from, :to, :ticks, :mode, :start_tick, :defer
 
   def initialize(from: 0, to: 0, ticks:, mode: :quad, start_tick: nil, defer: 0)
     @from = from
@@ -48,8 +48,9 @@ class Ease
       to: @to,
       ticks: @ticks,
       mode: @mode,
-      start_tick: @start_tick
-    }
+      start_tick: @start_tick,
+      defer: @defer
+    }.compact
   end
 
   def inspect
