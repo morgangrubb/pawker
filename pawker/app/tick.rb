@@ -17,6 +17,13 @@ def tick args
     # Start the game
     args.state.scenes ||= []
     args.state.scenes << Scenes::Title.new(args)
+
+    # Start at the round summary screen
+    # args.state.scenes << Scenes::RoundSummary.new(args,
+    #   hand: Hand.new(cards: args.state.deck.pick("4H", "4C", "AS", "10D")),
+    #   hand_to_beat: Hand.new(cards: args.state.deck.pick("2H", "2S")),
+    #   round: 1
+    # )
   end
 
   args.state.scenes.sort { |scene| scene.stack_order }.reverse.each do |scene|

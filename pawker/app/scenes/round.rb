@@ -2,7 +2,9 @@ module Scenes
   class Round < Scene
     STACK_ORDER = 100
 
-    def initialize(args, deck:, hand_to_beat:, round: 0, **kwargs)
+    attr_reader :deck
+
+    def initialize(args, hand_to_beat:, round: 0, **kwargs)
       super(args, **kwargs)
 
       args.state.reticle ||= Actors::Reticle.new
