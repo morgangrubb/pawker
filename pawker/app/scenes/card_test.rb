@@ -11,7 +11,7 @@ module Scenes
       0
     end
 
-    def tick(args, state)
+    def tick(args)
       if running?
         # On space, start the next screen
         if args.inputs.keyboard.space

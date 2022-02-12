@@ -10,7 +10,7 @@ module Scenes
       STACK_ORDER
     end
 
-    def tick(args, state)
+    def tick(args)
       return unless running?
 
       #

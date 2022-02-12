@@ -33,7 +33,7 @@ module Scenes
       STACK_ORDER
     end
 
-    def tick(args, state)
+    def tick(args)
       return unless running?
 
       if !@ticks_remaining.nil? && @ticks_remaining <= 0
