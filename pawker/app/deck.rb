@@ -22,11 +22,15 @@ class Deck
     @raw_cards ||=
       Rank::RANKS.flat_map do |rank|
         Suit::SUITS.map do |suit|
-          Card.new(rank, suit).tap { |card| card.generate_render_target!(args) }
+          Card.new(rank: rank, suit: suit).tap { |card| card.generate_render_target!(args) }
         end
       end
 
     @cards = @raw_cards.dup
+  end
+
+  def top
+    @cards.first
   end
 
   def draw

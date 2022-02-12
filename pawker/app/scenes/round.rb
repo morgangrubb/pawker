@@ -2,9 +2,9 @@ module Scenes
   class Round < Scene
     STACK_ORDER = 100
 
-    attr_reader :deck
+    attr_reader :deck, :bonus_card
 
-    def initialize(args, hand_to_beat:, round: 0, **kwargs)
+    def initialize(args, hand_to_beat:, bonus_card: nil, **kwargs)
       super(args, **kwargs)
 
       args.state.reticle ||= Actors::Reticle.new
@@ -12,6 +12,7 @@ module Scenes
 
       @deck = args.state.deck
       @hand_to_beat = hand_to_beat
+      @bonus_card = bonus_card
 
       @hand = Hand.new
       @hand.splay!
@@ -23,8 +24,6 @@ module Scenes
       @bugs = Actors.new(klass: Actors::Bug)
       @bugs.add(10).each { |bug| bug.card = deck.draw }
       @bugs.start(args)
-
-      @round = round
 
       @complete = false
       @ticks_remaining = nil
@@ -45,7 +44,7 @@ module Scenes
           @complete = true
           @interactive = false
           @ticks_remaining = 300
-          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, round: @round)
+          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, bonus_card: bonus_card)
         end
 
         # Target the paw on the cursor centre
@@ -78,7 +77,7 @@ module Scenes
           @complete = true
           @interactive = false
           @ticks_remaining = 300
-          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, round: @round)
+          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, bonus_card: bonus_card)
         end
 
         scatter_bugs =

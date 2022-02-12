@@ -16,23 +16,32 @@ def tick args
 
     # Start the game
     args.state.scenes ||= []
+    Progression.reset!(args)
 
     # Start at a specific level
-    # Progression.advance(args, round: 0)
-    # Progression.advance(args, round: 1, win: true)
-    # Progression.advance(args, round: 2, win: true)
-    # Progression.advance(args, round: 3, win: true)
-    # Progression.advance(args, round: 4, win: true)
-    # Progression.advance(args, round: 5, win: true)
-    # Progression.advance(args, round: 6, win: true)
-    # Progression.advance(args, round: 7, win: true)
+    # args.state.round = 0; Progression.next_round(args)
+    # args.state.round = 1; Progression.next_round(args)
+    # args.state.round = 2; Progression.next_round(args)
+    # args.state.round = 3; Progression.next_round(args)
+    # args.state.round = 4; Progression.next_round(args)
+    # args.state.round = 5; Progression.next_round(args)
+    # args.state.round = 6; Progression.next_round(args)
+    # args.state.round = 7; Progression.next_round(args)
 
     # Start at the round summary screen
+    # args.state.round = 3
+    # args.state.lives = 3
     # args.state.scenes << Scenes::RoundSummary.new(args,
-    #   hand: Hand.new(cards: args.state.deck.pick("AS", "10D")),
+    #   hand: Hand.new(cards: args.state.deck.pick("AS", "10D")), # , "AC"
     #   hand_to_beat: Hand.new(cards: args.state.deck.pick("2H", "2S")),
-    #   round: 0
+    #   bonus_card: args.state.deck.pick("AS")
     # )
+
+    # Start at the lives scene
+    # args.state.lives = 2
+    # args.state.round = 2
+    # Progression.gain_a_life(args, bonus_card: args.state.deck.pick("AS").first)
+    # Progression.lose_a_life(args)
 
     # Test the game over screen
     # args.state.scenes << Scenes::GameOver.new(args)
@@ -47,7 +56,7 @@ def tick args
   end
 
   args.state.scenes.sort { |scene| scene.stack_order }.reverse.each do |scene|
-    scene.tick(args)
+    scene.tick_with_defer(args)
     args.state.scenes.delete(scene) if scene.complete?
   end
 

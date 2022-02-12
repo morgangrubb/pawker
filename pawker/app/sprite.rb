@@ -1,7 +1,7 @@
 class Sprite
   attr_sprite
 
-  attr_accessor :ease_x, :ease_y
+  attr_accessor :ease_x, :ease_y, :ease_angle
 
   def initialize(**options)
     update(**options)
@@ -14,8 +14,6 @@ class Sprite
   end
 
   def tick(args)
-    # puts "Sprite#tick #{path}"
-
     if ease_x
       @x = ease_x.current(args)
       @ease_x = nil if ease_x.complete?(args)
@@ -24,6 +22,11 @@ class Sprite
     if ease_y
       @y = ease_y.current(args)
       @ease_y = nil if ease_y.complete?(args)
+    end
+
+    if ease_angle
+      @angle = ease_angle.current(args)
+      @ease_angle = nil if ease_angle.complete?(args)
     end
 
     args.nokia.sprites << self

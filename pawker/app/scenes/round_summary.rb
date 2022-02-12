@@ -1,13 +1,11 @@
 module Scenes
   class RoundSummary < Scene
-    STACK_ORDER = 1
+    STACK_ORDER = 2
 
-    attr_reader :hand, :hand_to_beat, :round
+    attr_reader :hand, :hand_to_beat, :bonus_card
 
-    def initialize(args, hand:, hand_to_beat:, round:, **kwargs)
+    def initialize(args, hand:, hand_to_beat:, bonus_card: nil, **kwargs)
       super(args, **kwargs)
-
-      @round = round
 
       @hand = hand
       @hand.tuck!
@@ -19,6 +17,8 @@ module Scenes
       @hand_to_beat.x = NOKIA_WIDTH - @hand_to_beat.w - 1
       @hand_to_beat.y = NOKIA_HEIGHT + 1
       @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.y, to: NOKIA_HEIGHT - @hand_to_beat.h - 1, ticks: 60, mode: :out_back)
+
+      @bonus_card = bonus_card
 
       @background_top = Sprite.new(path: "sprites/dither-swipe-short.png", w: 84, h: 24, x: NOKIA_WIDTH * -1, y: 24, flip_horizontally: true, flip_vertically: true)
       @background_top.ease_x = Ease.new(from: @background_top.x, to: 0 -1, ticks: 60, mode: :out_back)
@@ -49,19 +49,29 @@ module Scenes
 
       # 3 seconds to display the success page, then wipe back to title for the next round
       @ticks_remaining = 600
-
-      @interactive_after = Ease.new(ticks: 10)
     end
 
     def stack_order
       STACK_ORDER
     end
 
+    def start_next_scene(args, **kwargs)
+      if hand > hand_to_beat
+        if bonus_card && hand.include?(bonus_card)
+          Progression.gain_a_life(args, bonus_card: bonus_card, **kwargs)
+        else
+          Progression.next_round(args, **kwargs)
+        end
+      else
+        Progression.lose_a_life(args, **kwargs)
+      end
+    end
+
     def tick(args)
       return unless running?
 
       if @ticks_remaining
-        @ticks_remaining = 0 if @interactive_after.complete?(args) && args.inputs.keyboard.space
+        @ticks_remaining = 0 if ticks_elapsed >= 10 && args.inputs.keyboard.space
 
         if @ticks_remaining > 0
           @ticks_remaining -= 1
@@ -86,13 +96,13 @@ module Scenes
           @hand.ease_y = Ease.new(from: @hand.y, to: @hand.h * -1, ticks: 60, mode: :in_back)
           @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.y, to: NOKIA_HEIGHT, ticks: 60, mode: :in_back)
 
+          start_next_scene(args, defer: 40)
+
           @complete_timer = Ease.new(ticks: 60)
         end
       end
 
       if @complete_timer&.complete?(args)
-        # TODO: Start this a few frames early
-        Progression.advance(args, win: hand > hand_to_beat, round: round)
         advance_phase!
       else
         @background_top.tick(args)

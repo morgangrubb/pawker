@@ -1,26 +1,52 @@
 class Progression
   def self.start(args)
-    advance(args, round: -1)
+    reset!(args)
+    next_round(args)
   end
 
-  def self.advance(args, win: nil, round:)
+  def self.reset!(args)
+    args.state.lives = 3
+    args.state.round = -1
+  end
+
+  def self.lose_a_life(args, **kwargs)
+    args.state.lives -= 1
+    args.state.scenes << Scenes::Lives.new(args, direction: :lose, **kwargs)
+  end
+
+  def self.gain_a_life(args, **kwargs)
+    args.state.lives += 1
+    args.state.scenes << Scenes::Lives.new(args, direction: :gain, **kwargs)
+  end
+
+  def self.game_over(args, **kwargs)
+    args.state.scenes << Scenes::GameOver.new(args, **kwargs)
+  end
+
+  def self.game_won(args, **kwargs)
+    args.state.scenes << Scenes::Winner.new(args, **kwargs)
+  end
+
+  def self.repeat_round(args, **kwargs)
+    args.state.round -= 1
+    next_round(args, **kwargs)
+  end
+
+  def self.next_round(args, **kwargs)
     args.state.deck.reset!
     args.state.deck.shuffle!
 
     suits = [:spade, :diamond, :heart, :club].shuffle
 
-    if round >= 0 && !win
-      args.state.scenes << Scenes::GameOver.new(args)
-      return
-    elsif round >= 7 && win
-      args.state.scenes << Scenes::Winner.new(args)
+    args.state.round += 1
+
+    if args.state.round == 8
+      game_won(args)
       return
     end
 
-    next_round = round + 1
-
     hand_to_beat =
-      case next_round
+      case args.state.round
       when -1
         # TODO: Can't get here
         # TODO: High card
@@ -62,7 +88,11 @@ class Progression
 
       end
 
-    args.state.scenes << Scenes::Title.new(args, hand_to_beat: hand_to_beat, round: next_round)
+    # Pick a bonus card and then shuffle it back into the deck
+    bonus_card = args.state.deck.top unless args.state.round == 0
+    args.state.deck.shuffle!
+
+    args.state.scenes << Scenes::Title.new(args, hand_to_beat: hand_to_beat, bonus_card: bonus_card, **kwargs)
   end
 end
 

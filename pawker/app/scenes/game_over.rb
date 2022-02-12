@@ -11,7 +11,7 @@ module Scenes
         **DARK_COLOUR_RGB
       }.label!
 
-      if args.inputs.keyboard.space
+      if ticks_elapsed >= 10 && args.inputs.keyboard.space
         advance_phase!
 
         Progression.start(args)

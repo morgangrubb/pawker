@@ -1,14 +1,11 @@
-class Card
-  include Serializable
-
-  attr_sprite
-
+class Card < Sprite
   FONT_PATH = NOKIA_FONT_PATH
   FONT_SIZE_ENUM = NOKIA_FONT_SM
 
   attr_reader :rank, :suit
 
-  def initialize rank, suit
+  def initialize(rank:, suit:, **kwargs)
+    super(**kwargs)
     @rank, @suit = Rank.new(rank), Suit.new(suit)
   end
 
@@ -69,18 +66,6 @@ class Card
     return 0 if rank == other.rank #&& suit == other.suit
     return 1 if rank >= other.rank #&& suit >= other.suit
     return -1
-  end
-
-  def serialize
-    {
-      w: @w, h: @h, x: @x, y: @y, a: @a, angle: @angle,
-      path: @path,
-      source_x: @source_x, source_y: @source_y, source_w: @source_w, source_h: @source_h
-    }.compact
-  end
-
-  def to_s
-    serialize.to_s
   end
 end
 

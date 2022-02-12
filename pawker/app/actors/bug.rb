@@ -98,7 +98,7 @@ class Actors
     end
 
     def render(args)
-      calculate(args) unless args.state.debug.paused?
+      calculate(args) #unless args.state.debug.paused?
 
       unless @mode[:name] == :purgatory
         # .frame_index(how_many_frames_in_sprite_sheet,
@@ -125,12 +125,14 @@ class Actors
           # TODO: Put the card behind the bug
           card.y = @position[:y] - card.h
           card.x = @position[:x]
+          card.ease_x = nil
+          card.ease_y = nil
 
           args.nokia.sprites << card
         end
       end
 
-      update_mode(args) unless args.state.debug.paused?
+      update_mode(args) # unless args.state.debug.paused?
     end
 
     # TODO: Do a circle collision check from the centre of the bug
@@ -339,6 +341,15 @@ class Actors
         a: 255,
         speed: 0,
       })
+    end
+
+    def serialize
+      {
+        index: @index,
+        card: @card,
+        mode: @mode,
+        **(@position || {}).slice(:x, :y, :h, :w, :angle)
+      }.compact
     end
   end
 end

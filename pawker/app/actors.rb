@@ -55,6 +55,10 @@ class Actors
   def collision?(position)
     @actors.any? { |actor| actor.collision?(position) }
   end
+
+  def serialize
+    { actors: @actors }
+  end
 end
 
 $gtk.reset()

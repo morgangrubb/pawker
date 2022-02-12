@@ -28,6 +28,10 @@ class Hand
     @display == :tucked
   end
 
+  def include?(card)
+    cards.any? { |card| card.short == card.is_a?(Card) ? card.short : card }
+  end
+
   def w
     return 0 if cards.none?
 
