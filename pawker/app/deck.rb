@@ -1,21 +1,32 @@
 class Deck
   include Serializable
 
-  CARDS =
-    Rank::RANKS.flat_map do |rank|
-      Suit::SUITS.map do |suit|
-        Card.new(rank, suit)
-      end
-    end
+  # CARDS ||=
+  #   Rank::RANKS.flat_map do |rank|
+  #     Suit::SUITS.map do |suit|
+  #       Card.new(rank, suit)
+  #     end
+  #   end
 
-  def self.generate_render_targets!(args)
-    CARDS.each { |card| card.generate_render_target!(args) }
-  end
+  # def self.generate_render_targets!(args)
+  #   CARDS.each { |card| card.generate_render_target!(args) }
+  # end
 
   attr_reader :cards
 
   def initialize
-    reset!
+    @cards = []
+  end
+
+  def generate_cards!(args)
+    @raw_cards ||=
+      Rank::RANKS.flat_map do |rank|
+        Suit::SUITS.map do |suit|
+          Card.new(rank, suit).tap { |card| card.generate_render_target!(args) }
+        end
+      end
+
+    @cards = @raw_cards.dup
   end
 
   def draw
@@ -68,7 +79,7 @@ class Deck
   end
 
   def reset!
-    @cards = CARDS.dup
+    @cards = @raw_cards.dup
   end
 end
 

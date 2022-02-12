@@ -6,18 +6,17 @@ def tick args
 
   # Game setup on tick 0
   if args.state.tick_count == 0
+    # Generate a deck of cards
+    args.state.deck = Deck.new
+    args.state.deck.generate_cards!(args)
+
     # Run tests
     Scenes::RanksTest.new(args).tick(args)
-
-    # Generate all card sprites
-    Deck.generate_render_targets!(args)
+    args.state.deck.reset!
 
     # Start the game
     args.state.scenes ||= []
     args.state.scenes << Scenes::Title.new(args)
-
-    deck = Deck.new
-    deck.shuffle!
   end
 
   args.state.scenes.sort { |scene| scene.stack_order }.reverse.each do |scene|

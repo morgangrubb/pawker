@@ -1,7 +1,11 @@
 module Scenes
   class RanksTest < Scene
+    attr_reader :deck
+
     def initialize(args, **kwargs)
       super(args, **kwargs)
+
+      @deck = args.state.deck
     end
 
     def stack_order
@@ -53,13 +57,13 @@ module Scenes
       rank = Ranks::HighCard.new(Hand.new(cards: []))
       assert_false rank.valid?, "HighCard should not be found"
 
-      cards = Deck.new.pick(rank: [:two, :three, :four], suit: :heart)
+      cards = deck.pick(rank: [:two, :three, :four], suit: :heart)
       rank_low = Ranks::HighCard.new(Hand.new(cards: cards))
       assert_equal ["4H"], rank_low.relevant_cards.map(&:short)
       assert_equal ["3H", "2H"], rank_low.kickers.map(&:short)
       assert_true rank_low.valid?, "HighCard should be found"
 
-      cards = Deck.new.pick(rank: [:ace, :king, :queen], suit: :heart)
+      cards = deck.pick(rank: [:ace, :king, :queen], suit: :heart)
       rank_high = Ranks::HighCard.new(Hand.new(cards: cards))
       assert_equal ["AH"], rank_high.relevant_cards.map(&:short)
       assert_equal ["KH", "QH"], rank_high.kickers.map(&:short)
@@ -71,16 +75,16 @@ module Scenes
     end
 
     def test_pair
-      cards = Deck.new.pick(rank: [:two, :three], suit: :heart)
+      cards = deck.pick(rank: [:two, :three], suit: :heart)
       rank = Ranks::Pair.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No pair should be found"
 
-      cards = Deck.new.pick(rank: :three, suit: [:diamond, :heart])
+      cards = deck.pick(rank: :three, suit: [:diamond, :heart])
       rank_low = Ranks::Pair.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "Pair of 3H, 3D should be found"
 
-      cards = Deck.new.pick(rank: [:three, :seven], suit: [:diamond, :heart])
-      cards += Deck.new.pick(rank: :nine, suit: :spade)
+      cards = deck.pick(rank: [:three, :seven], suit: [:diamond, :heart])
+      cards += deck.pick(rank: :nine, suit: :spade)
       rank_high = Ranks::Pair.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "Pair of 7H, 7D should be found"
       assert_equal ["7D", "7H"], rank_high.relevant_cards.map(&:short).sort, "Pair of 7D, 7H should be found"
@@ -92,16 +96,16 @@ module Scenes
     end
 
     def test_two_pair
-      cards = Deck.new.pick(rank: [:two, :three, :four], suit: :heart)
+      cards = deck.pick(rank: [:two, :three, :four], suit: :heart)
       rank = Ranks::TwoPair.new(Hand.new(cards: cards))
       assert_false rank.valid?, "TwoPair should not be found"
 
-      cards = Deck.new.pick(rank: [:three, :four], suit: [:diamond, :heart])
+      cards = deck.pick(rank: [:three, :four], suit: [:diamond, :heart])
       rank_low = Ranks::TwoPair.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "TwoPair should be found"
 
-      cards = Deck.new.pick(rank: [:four, :seven], suit: [:diamond, :heart])
-      cards += Deck.new.pick(rank: :nine, suit: :spade)
+      cards = deck.pick(rank: [:four, :seven], suit: [:diamond, :heart])
+      cards += deck.pick(rank: :nine, suit: :spade)
       rank_high = Ranks::TwoPair.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "TwoPair should be found"
       assert_equal ["7H", "7D", "4H", "4D"], rank_high.relevant_cards.map(&:short), "TwoPair should be found"
@@ -113,16 +117,16 @@ module Scenes
     end
 
     def test_three_of_a_kind
-      cards = Deck.new.pick(rank: [:two, :three, :four], suit: :heart)
+      cards = deck.pick(rank: [:two, :three, :four], suit: :heart)
       rank = Ranks::ThreeOfAKind.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No ThreeOfAKind should be found"
 
-      cards = Deck.new.pick(rank: :three, suit: [:diamond, :heart, :club])
+      cards = deck.pick(rank: :three, suit: [:diamond, :heart, :club])
       rank_low = Ranks::ThreeOfAKind.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "ThreeOfAKind of 3H, 3D, 3C should be found"
 
-      cards = Deck.new.pick(rank: [:three, :seven], suit: [:diamond, :heart, :club])
-      cards += Deck.new.pick(rank: :nine, suit: :spade)
+      cards = deck.pick(rank: [:three, :seven], suit: [:diamond, :heart, :club])
+      cards += deck.pick(rank: :nine, suit: :spade)
       rank_high = Ranks::ThreeOfAKind.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "ThreeOfAKind of 7H, 7D, 7C should be found"
       assert_equal ["7C", "7D", "7H"], rank_high.relevant_cards.map(&:short).sort
@@ -134,24 +138,24 @@ module Scenes
     end
 
     def test_straight
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five], suit: :club)
+      cards = deck.pick(rank: [:two, :three, :four, :five], suit: :club)
       rank = Ranks::Straight.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No Straight should be found"
 
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five, :six, :eight], suit: :club)
+      cards = deck.pick(rank: [:two, :three, :four, :five, :six, :eight], suit: :club)
       rank_low = Ranks::Straight.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "Straight should be found"
       assert_equal ["6C", "5C", "4C", "3C", "2C"], rank_low.relevant_cards.map(&:short)
       assert_true rank_low.kickers.empty?, "Straight has no kickers"
 
-      cards = Deck.new.pick("2C", "3C", "4C", "4H", "5H", "6H")
+      cards = deck.pick("2C", "3C", "4C", "4H", "5H", "6H")
       rank_middle = Ranks::Straight.new(Hand.new(cards: cards))
       assert_true rank_middle.valid?, "Straight should be found"
       assert_equal ["6H", "5H", "4H", "3C", "2C"], rank_middle.relevant_cards.map(&:short)
       assert_true rank_middle.kickers.empty?, "Straight has no kickers"
 
-      cards = Deck.new.pick(rank: [:nine, :ten, :jack, :queen, :king], suit: :club)
-      cards += Deck.new.pick(rank: :ace, suit: :spade)
+      cards = deck.pick(rank: [:nine, :ten, :jack, :queen, :king], suit: :club)
+      cards += deck.pick(rank: :ace, suit: :spade)
       rank_high = Ranks::Straight.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "Straight should be found"
       assert_equal ["AS", "KC", "QC", "JC", "10C"], rank_high.relevant_cards.map(&:short)
@@ -163,18 +167,18 @@ module Scenes
     end
 
     def test_flush
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five], suit: :club)
-      cards += Deck.new.pick(rank: :six, suit: :spade)
+      cards = deck.pick(rank: [:two, :three, :four, :five], suit: :club)
+      cards += deck.pick(rank: :six, suit: :spade)
       rank = Ranks::Flush.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No Flush should be found"
 
-      cards = Deck.new.pick(rank: [:two, :four, :six, :seven, :eight], suit: :club)
+      cards = deck.pick(rank: [:two, :four, :six, :seven, :eight], suit: :club)
       rank_low = Ranks::Flush.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "Flush should be found"
       assert_true rank_low.kickers.empty?, "Flush has no kickers"
 
-      cards = Deck.new.pick(rank: [:nine, :ten, :jack, :queen, :king], suit: :club)
-      cards += Deck.new.pick(rank: :ace, suit: :spade)
+      cards = deck.pick(rank: [:nine, :ten, :jack, :queen, :king], suit: :club)
+      cards += deck.pick(rank: :ace, suit: :spade)
       rank_high = Ranks::Flush.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "Flush should be found"
       assert_equal ["KC", "QC", "JC", "10C", "9C"], rank_high.relevant_cards.map(&:short)
@@ -186,21 +190,21 @@ module Scenes
     end
 
     def test_full_house
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
-      cards += Deck.new.pick(rank: :six, suit: :spade)
+      cards = deck.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
+      cards += deck.pick(rank: :six, suit: :spade)
       rank = Ranks::FullHouse.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No FullHouse should be found"
 
-      cards = Deck.new.pick(rank: :two, suit: [:club, :heart, :spade])
-      cards += Deck.new.pick(rank: :three, suit: [:diamond, :heart])
+      cards = deck.pick(rank: :two, suit: [:club, :heart, :spade])
+      cards += deck.pick(rank: :three, suit: [:diamond, :heart])
       rank_low = Ranks::FullHouse.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "FullHouse should be found"
       assert_true rank_low.kickers.empty?, "FullHouse has no kickers"
 
-      cards = Deck.new.pick(rank: :three, suit: [:club, :heart, :spade])
-      cards += Deck.new.pick(rank: :two, suit: [:diamond, :heart])
-      cards += Deck.new.pick(rank: :ace, suit: :heart)
-      cards += Deck.new.pick(rank: :king, suit: :club)
+      cards = deck.pick(rank: :three, suit: [:club, :heart, :spade])
+      cards += deck.pick(rank: :two, suit: [:diamond, :heart])
+      cards += deck.pick(rank: :ace, suit: :heart)
+      cards += deck.pick(rank: :king, suit: :club)
       rank_high = Ranks::FullHouse.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "FullHouse should be found"
       assert_equal ["3S", "3H", "3C", "2H", "2D"], rank_high.relevant_cards.map(&:short)
@@ -212,18 +216,18 @@ module Scenes
     end
 
     def test_four_of_a_kind
-      cards = Deck.new.pick(rank: [:two, :three, :four], suit: :heart)
+      cards = deck.pick(rank: [:two, :three, :four], suit: :heart)
       rank = Ranks::FourOfAKind.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No FourOfAKind should be found"
 
-      cards = Deck.new.pick(rank: :three, suit: [:diamond, :heart, :club, :spade])
-      cards += Deck.new.pick(rank: :four, suit: [:diamond, :heart])
+      cards = deck.pick(rank: :three, suit: [:diamond, :heart, :club, :spade])
+      cards += deck.pick(rank: :four, suit: [:diamond, :heart])
       rank_low = Ranks::FourOfAKind.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "FourOfAKind should be found"
 
-      cards = Deck.new.pick(rank: :seven, suit: [:diamond, :heart, :club, :spade])
-      cards += Deck.new.pick(rank: :nine, suit: :spade)
-      cards += Deck.new.pick(rank: :four, suit: [:diamond, :heart])
+      cards = deck.pick(rank: :seven, suit: [:diamond, :heart, :club, :spade])
+      cards += deck.pick(rank: :nine, suit: :spade)
+      cards += deck.pick(rank: :four, suit: [:diamond, :heart])
       rank_high = Ranks::FourOfAKind.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "FourOfAKind should be found"
       assert_equal ["7C", "7D", "7H", "7S"], rank_high.relevant_cards.map(&:short).sort
@@ -235,18 +239,18 @@ module Scenes
     end
 
     def test_straight_flush
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five], suit: :club)
-      cards += Deck.new.pick(rank: :six, suit: :spade)
+      cards = deck.pick(rank: [:two, :three, :four, :five], suit: :club)
+      cards += deck.pick(rank: :six, suit: :spade)
       rank = Ranks::StraightFlush.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No StraightFlush should be found"
 
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
+      cards = deck.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
       rank_low = Ranks::StraightFlush.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "StraightFlush should be found"
       assert_true rank_low.kickers.empty?, "StraightFlush has no kickers"
 
-      cards = Deck.new.pick(rank: [:nine, :ten, :jack, :queen, :king], suit: :club)
-      cards += Deck.new.pick(rank: :ace, suit: :spade)
+      cards = deck.pick(rank: [:nine, :ten, :jack, :queen, :king], suit: :club)
+      cards += deck.pick(rank: :ace, suit: :spade)
       rank_high = Ranks::StraightFlush.new(Hand.new(cards: cards))
       assert_true rank_high.valid?, "StraightFlush should be found"
       assert_equal ["KC", "QC", "JC", "10C", "9C"], rank_high.relevant_cards.map(&:short)
@@ -258,23 +262,23 @@ module Scenes
     end
 
     def test_royal_flush
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
-      cards += Deck.new.pick(rank: :six, suit: :spade)
+      cards = deck.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
+      cards += deck.pick(rank: :six, suit: :spade)
       rank = Ranks::RoyalFlush.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No RoyalFlush should be found"
 
-      cards = Deck.new.pick(rank: [:ace, :king, :queen, :jack], suit: :heart)
-      cards += Deck.new.pick(rank: :ten, suit: :spade)
+      cards = deck.pick(rank: [:ace, :king, :queen, :jack], suit: :heart)
+      cards += deck.pick(rank: :ten, suit: :spade)
       rank = Ranks::RoyalFlush.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No RoyalFlush should be found"
 
-      cards = Deck.new.pick(rank: [:ace, :king, :queen, :jack, :ten], suit: :heart)
+      cards = deck.pick(rank: [:ace, :king, :queen, :jack, :ten], suit: :heart)
       rank_heart = Ranks::RoyalFlush.new(Hand.new(cards: cards))
       assert_true rank_heart.valid?, "RoyalFlush should be found"
       assert_equal ["AH", "KH", "QH", "JH", "10H"], rank_heart.relevant_cards.map(&:short)
       assert_true rank_heart.kickers.empty?, "RoyalFlush has no kickers"
 
-      cards = Deck.new.pick(rank: [:ace, :king, :queen, :jack, :ten], suit: :diamond)
+      cards = deck.pick(rank: [:ace, :king, :queen, :jack, :ten], suit: :diamond)
       rank_diamond = Ranks::RoyalFlush.new(Hand.new(cards: cards))
       assert_true rank_diamond.valid?, "RoyalFlush should be found"
       assert_equal ["AD", "KD", "QD", "JD", "10D"], rank_diamond.relevant_cards.map(&:short)
@@ -284,35 +288,35 @@ module Scenes
     end
 
     def test_ranks_ordering
-      cards = Deck.new.pick(rank: [:two, :three, :four], suit: :heart)
+      cards = deck.pick(rank: [:two, :three, :four], suit: :heart)
       high_card = Ranks::HighCard.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: [:three, :seven], suit: [:diamond, :heart])
+      cards = deck.pick(rank: [:three, :seven], suit: [:diamond, :heart])
       pair = Ranks::Pair.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: [:three, :seven], suit: [:diamond, :heart, :club])
+      cards = deck.pick(rank: [:three, :seven], suit: [:diamond, :heart, :club])
       three_of_a_kind = Ranks::ThreeOfAKind.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: [:three, :four], suit: [:diamond, :heart])
+      cards = deck.pick(rank: [:three, :four], suit: [:diamond, :heart])
       two_pair = Ranks::TwoPair.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
+      cards = deck.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
       straight = Ranks::Straight.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: [:two, :four, :six, :seven, :eight], suit: :club)
+      cards = deck.pick(rank: [:two, :four, :six, :seven, :eight], suit: :club)
       flush = Ranks::Flush.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: :two, suit: [:club, :heart, :spade])
-      cards += Deck.new.pick(rank: :three, suit: [:diamond, :heart])
+      cards = deck.pick(rank: :two, suit: [:club, :heart, :spade])
+      cards += deck.pick(rank: :three, suit: [:diamond, :heart])
       full_house = Ranks::FullHouse.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: :three, suit: [:diamond, :heart, :club, :spade])
+      cards = deck.pick(rank: :three, suit: [:diamond, :heart, :club, :spade])
       four_of_a_kind = Ranks::FourOfAKind.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
+      cards = deck.pick(rank: [:two, :three, :four, :five, :six], suit: :club)
       straight_flush = Ranks::StraightFlush.new(Hand.new(cards: cards))
 
-      cards = Deck.new.pick(rank: [:ace, :king, :queen, :jack, :ten], suit: :heart)
+      cards = deck.pick(rank: [:ace, :king, :queen, :jack, :ten], suit: :heart)
       royal_flush = Ranks::RoyalFlush.new(Hand.new(cards: cards))
 
       assert_true pair > high_card
@@ -327,8 +331,8 @@ module Scenes
     end
 
     def test_best
-      cards = Deck.new.pick(rank: :two, suit: [:club, :heart, :spade])
-      cards += Deck.new.pick(rank: :three, suit: [:diamond, :heart])
+      cards = deck.pick(rank: :two, suit: [:club, :heart, :spade])
+      cards += deck.pick(rank: :three, suit: [:diamond, :heart])
       hand = Hand.new(cards: cards)
 
       best = Ranks.best(hand)

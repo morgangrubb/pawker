@@ -8,7 +8,7 @@ module Scenes
       args.state.reticle ||= Actors::Reticle.new
       args.state.paw ||= Actors::Paw.new
 
-      @deck = deck
+      @deck = args.state.deck
       @hand_to_beat = hand_to_beat
 
       @hand = Hand.new

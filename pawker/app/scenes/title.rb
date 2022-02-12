@@ -13,13 +13,14 @@ module Scenes
       args.state.reticle ||= Actors::Reticle.new
       args.state.reticle.ease_to_start!(args)
 
-      @deck = Deck.new
+      @deck = args.state.deck
+      @deck.reset!
       @deck.shuffle!
 
       @hand_to_beat = Hand.new(cards: @deck.pick!("2H", "2D"))
       @hand_to_beat.x = 1
-      raise "@hand_to_beat.h is nil" if @hand_to_beat.h.nil?
       @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.h * -1, to: 1, ticks: 20, mode: :out_back)
+      # raise "@hand_to_beat.h is nil" if @hand_to_beat.h.nil?
 
       @splats = Actors.new(klass: Actors::Splat)
       @bugs = Actors.new(klass: Actors::Bug)
@@ -51,7 +52,7 @@ module Scenes
             .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
 
         if splatted.any?
-          args.state.scenes << Scenes::Round.new(args, deck: @deck, hand_to_beat: @hand_to_beat, round: round)
+          args.state.scenes << Scenes::Round.new(args, hand_to_beat: @hand_to_beat, round: round)
 
           @interactive = false
 

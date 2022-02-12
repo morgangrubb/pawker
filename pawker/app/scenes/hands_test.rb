@@ -3,7 +3,7 @@ module Scenes
     def initialize(args, **kwargs)
       super(args, **kwargs)
 
-      @deck = Deck.new
+      @deck = @args.state.deck
       @deck.shuffle!
 
       @hands = [

@@ -3,8 +3,7 @@ module Scenes
     def initialize(args, **kwargs)
       super(args, **kwargs)
 
-      @deck = Deck.new
-      # @card = @deck.draw
+      @deck = args.state.deck
     end
 
     def stack_order
@@ -40,9 +39,6 @@ module Scenes
               break
             end
           end
-
-          # Render a card
-          # args.nokia.sprites << @card
         end
       end
     end
