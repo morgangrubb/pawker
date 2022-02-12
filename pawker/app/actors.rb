@@ -1,9 +1,16 @@
 class Actors
+  include Enumerable
+  include Serializable
+
   attr_reader :actors, :klass
 
   def initialize(klass:, actors: [])
     @klass = klass
     @actors = actors
+  end
+
+  def each
+    @actors.each { |actor| yield actor }
   end
 
   def in_range_of(args, circle)
@@ -19,7 +26,10 @@ class Actors
   end
 
   def add(count, **args)
-    count.times { |i| @actors << @klass.new(index: @actors.length, controller: self, **args) }
+    new_actors = []
+    count.times { |i| new_actors << @klass.new(index: @actors.length + i, controller: self, **args) }
+    @actors += new_actors
+    new_actors
   end
 
   def start(args, **options)
@@ -46,3 +56,5 @@ class Actors
     @actors.any? { |actor| actor.collision?(position) }
   end
 end
+
+$gtk.reset()

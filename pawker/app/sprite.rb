@@ -1,9 +1,7 @@
 class Sprite
-  attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b,
-    :source_x, :source_y, :source_w, :source_h,
-    :tile_x, :tile_y, :tile_w, :tile_h,
-    :flip_horizontally, :flip_vertically,
-    :angle_anchor_x, :angle_anchor_y, :blendmode_enum
+  attr_sprite
+
+  attr_accessor :ease_x, :ease_y
 
   def initialize(**options)
     update(**options)
@@ -15,8 +13,20 @@ class Sprite
     end
   end
 
-  def primitive_marker
-    :sprite
+  def tick(args)
+    # puts "Sprite#tick #{path}"
+
+    if ease_x
+      @x = ease_x.current(args)
+      @ease_x = nil if ease_x.complete?(args)
+    end
+
+    if ease_y
+      @y = ease_y.current(args)
+      @ease_y = nil if ease_y.complete?(args)
+    end
+
+    args.nokia.sprites << self
   end
 
   def serialize
@@ -34,3 +44,5 @@ class Sprite
     serialize.to_s
   end
 end
+
+$gtk.reset()

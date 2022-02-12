@@ -1,5 +1,5 @@
-module Screens
-  class HandsTest < Screen
+module Scenes
+  class HandsTest < Scene
     def initialize(args, **kwargs)
       super(args, **kwargs)
 
@@ -28,6 +28,10 @@ module Screens
       ]
     end
 
+    def stack_order
+      0
+    end
+
     def tick(args, state)
       if running?
         # On space, start the next screen
@@ -35,7 +39,7 @@ module Screens
           advance_phase!
 
           # Start the next screen
-          state.start(args, :title)
+          args.state.scenes << Scenes::Title.new(args)
         else
           args.nokia.sprites << { x: 0, y: 0, w: NOKIA_WIDTH, h: NOKIA_HEIGHT, path: :pixel }.merge(DARK_COLOUR_RGB)
 
@@ -48,4 +52,4 @@ module Screens
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

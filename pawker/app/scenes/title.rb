@@ -1,19 +1,24 @@
-module Screens
-  class Title < Screen
-    def initialize(args, **kwargs)
+module Scenes
+  class Title < Scene
+    STACK_ORDER = 0
+
+    attr_reader :round
+
+    def initialize(args, round: 0, **kwargs)
       super(args, **kwargs)
+
+      @round = round
 
       args.state.paw ||= Actors::Paw.new
       args.state.reticle ||= Actors::Reticle.new
       args.state.reticle.ease_to_start!(args)
 
       @deck = Deck.new
-      cards = @deck.pick!(suit: [:heart, :diamond], rank: :two)
-      cards += @deck.pick(suit: :spade, rank: [:nine, :six, :three])
-      @hand_to_beat = Hand.new(cards: cards)
       @deck.shuffle!
 
+      @hand_to_beat = Hand.new(cards: @deck.pick!("2H", "2D"))
       @hand_to_beat.x = 1
+      raise "@hand_to_beat.h is nil" if @hand_to_beat.h.nil?
       @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.h * -1, to: 1, ticks: 20, mode: :out_back)
 
       @splats = Actors.new(klass: Actors::Splat)
@@ -23,20 +28,14 @@ module Screens
 
       @background = Actors::Background.new
 
+      @instructions = Label.new(x: 2, y: -48, font: NOKIA_FONT_PATH, size_enum: NOKIA_FONT_SM, text: "Paw\nto\nbeat:".upcase, **LIGHT_COLOUR_RGB)
+      @instructions.ease_y = Ease.new(from: @instructions.y, to: @hand_to_beat.h + 6, ticks: 60, defer: 20, mode: :out_back)
+
       @interactive = true
+    end
 
-      # TODO: Set a start position off screen with a target on the right half
-      #   of the screen and the mode set to meandering so the bug just twitches
-      #   and walks occasionally.
-
-      # args.state.bugs.actors.first.tap do |bug|
-      #   bug.meandering!(args, { x: })
-      # end
-      # .meandering!(args)
-      # args.state.bugs.actors.first
-      #
-
-      # @start_game = false
+    def stack_order
+      STACK_ORDER
     end
 
     def tick(args, state)
@@ -52,7 +51,7 @@ module Screens
             .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
 
         if splatted.any?
-          state.start(args, :game, deck: @deck, hand_to_beat: @hand_to_beat)
+          args.state.scenes << Scenes::Round.new(args, deck: @deck, hand_to_beat: @hand_to_beat, round: round)
 
           @interactive = false
 
@@ -64,6 +63,8 @@ module Screens
           @background.withdraw!(args)
 
           @hand_to_beat.ease_y = Ease.new(from: @hand_to_beat.y, to: @hand_to_beat.h * -1, ticks: 20, mode: :in_back)
+
+          @instructions.ease_y = Ease.new(from: @instructions.y, to: -48, ticks: 60, mode: :in_back)
 
           @start_game = true
         end
@@ -82,10 +83,12 @@ module Screens
 
       @hand_to_beat.tick(args)
 
+      @instructions.tick(args)
+
       args.state.paw.update(args)
       args.nokia.sprites << args.state.paw
     end
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

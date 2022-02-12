@@ -1,5 +1,7 @@
 class Actors
   class Background
+    include Serializable
+
     attr_sprite
 
     EXCESS = 36
@@ -28,4 +30,4 @@ class Actors
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

@@ -1,7 +1,11 @@
-module Screens
-  class RanksTest < Screen
+module Scenes
+  class RanksTest < Scene
     def initialize(args, **kwargs)
       super(args, **kwargs)
+    end
+
+    def stack_order
+      0
     end
 
     def tick(args, state)
@@ -11,7 +15,7 @@ module Screens
           advance_phase!
 
           # Start the next screen
-          state.start(args, :title)
+          args.state.scenes << Scenes::Title.new(args)
         elsif args.state.tick_count % 60 == 0
           test_high_card
           test_pair
@@ -335,4 +339,4 @@ module Screens
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

@@ -1,10 +1,14 @@
-module Screens
-  class CardTest < Screen
+module Scenes
+  class CardTest < Scene
     def initialize(args, **kwargs)
       super(args, **kwargs)
 
       @deck = Deck.new
       # @card = @deck.draw
+    end
+
+    def stack_order
+      0
     end
 
     def tick(args, state)
@@ -14,7 +18,7 @@ module Screens
           advance_phase!
 
           # Start the next screen
-          state.start(args, :title)
+          args.state.scenes << Scenes::Title.new(args)
         else
           x = 0
           y = 0
@@ -45,4 +49,4 @@ module Screens
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

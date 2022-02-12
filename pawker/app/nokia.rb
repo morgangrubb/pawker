@@ -133,7 +133,7 @@ module GTK
       @args.render_target(:nokia)
            .labels
            .each do |l|
-        l.y  += 1
+        # l.y  += 1
 
         next unless l.r.nil?
 

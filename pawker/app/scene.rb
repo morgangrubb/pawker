@@ -1,4 +1,6 @@
-class Screen
+class Scene
+  include Serializable
+
   attr_reader :phase
 
   def initialize(args, **kwargs)
@@ -16,10 +18,6 @@ class Screen
   def complete?
     @phase == :complete
   end
-
-  # def state(args)
-  #   args.state.screens[self]
-  # end
 
   def advance_phase!
     @phase = @phases.next

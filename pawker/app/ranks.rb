@@ -23,6 +23,7 @@ module Ranks
 
   class Base
     include Comparable
+    include Serializable
 
     attr_reader :hand
 
@@ -338,4 +339,4 @@ module Ranks
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

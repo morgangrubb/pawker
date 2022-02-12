@@ -1,4 +1,7 @@
 class Hand
+  include Comparable
+  include Serializable
+
   attr_accessor :x, :y, :cards, :ease_x, :ease_y
 
   def initialize(cards: [])
@@ -44,6 +47,10 @@ class Hand
 
   def rank
     @rank ||= Ranks.best(self)
+  end
+
+  def <=>(other)
+    rank <=> (other.is_a?(Hand) ? other.rank : other)
   end
 
   def remove(card)
@@ -175,4 +182,4 @@ class Hand
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

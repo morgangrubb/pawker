@@ -1,8 +1,8 @@
-module Screens
-  class Game < Screen
-    MAX_SWATS = 5
+module Scenes
+  class Round < Scene
+    STACK_ORDER = 100
 
-    def initialize(args, deck:, hand_to_beat:, **kwargs)
+    def initialize(args, deck:, hand_to_beat:, round: 0, **kwargs)
       super(args, **kwargs)
 
       args.state.reticle ||= Actors::Reticle.new
@@ -13,20 +13,24 @@ module Screens
 
       @hand = Hand.new
       @hand.splay!
-      @hand_to_beat.x = 1
-      @hand_to_beat.y = 1
+      @hand.x = 1
+      @hand.y = 1
 
       @splats = Actors.new(klass: Actors::Splat)
 
       @bugs = Actors.new(klass: Actors::Bug)
-      @bugs.add(10, deck: @deck)
+      @bugs.add(10).each { |bug| bug.card = deck.draw }
       @bugs.start(args)
 
-      @swats = 0
+      @round = round
 
       @complete = false
       @ticks_remaining = nil
       @interactive = true
+    end
+
+    def stack_order
+      STACK_ORDER
     end
 
     def tick(args, state)
@@ -35,13 +39,11 @@ module Screens
       if !@ticks_remaining.nil? && @ticks_remaining <= 0
         advance_phase!
       elsif @interactive && args.inputs.keyboard.space && args.state.paw.available?
-        @swats += 1
-
-        if @swats >= MAX_SWATS
+        if @deck.empty? # TODO: This needs to allow targetting the bugs that are still running around
           @complete = true
           @interactive = false
           @ticks_remaining = 300
-          state.start(args, :title)
+          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, round: @round)
         end
 
         # Target the paw on the cursor centre
@@ -55,14 +57,27 @@ module Screens
 
             if bug.card
               @hand.add(bug.card)
+              bug.card = nil
             end
 
             if @complete
               bug.stop(args)
             else
-              bug.start(args) # Reset offscreen
+              if (card = @deck.draw)
+                bug.start(args) # Reset offscreen
+                bug.card = card
+              else
+                bug.stop(args)
+              end
             end
           end
+
+        if @hand > @hand_to_beat
+          @complete = true
+          @interactive = false
+          @ticks_remaining = 300
+          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, round: @round)
+        end
 
         scatter_bugs =
           if @complete
@@ -80,8 +95,20 @@ module Screens
       args.state.reticle.update(args)
       args.state.paw.update(args)
 
-      @bugs.render(args)
       @splats.render(args)
+
+      @bugs.render(args)
+
+      @bugs.filter(&:walking?).filter(&:offscreen?).each do |bug|
+        if @complete
+          bug.stop(args)
+        elsif (card = @deck.draw)
+          bug.stop(args, ticks_remaining: rand(80))
+          bug.card = card
+        else
+          bug.stop(args)
+        end
+      end
 
       args.nokia.sprites << args.state.reticle
 
@@ -92,4 +119,4 @@ module Screens
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

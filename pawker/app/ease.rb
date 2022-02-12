@@ -1,15 +1,23 @@
 class Ease
-  attr_reader :from, :to, :ticks, :mode, :start_tick
+  include Serializable
 
-  def initialize(from:, to:, ticks:, mode: :quad, start_tick: nil)
+  attr_reader :from, :to, :ticks, :mode, :start_tick, :defer
+
+  def initialize(from:, to:, ticks:, mode: :quad, start_tick: nil, defer: 0)
     @from = from
     @to = to
     @ticks = ticks
     @start_tick = start_tick
     @mode = mode
+    @defer = defer
   end
 
   def relative(args)
+    if defer && defer > 0
+      @defer -= 1
+      return 0
+    end
+
     @start_tick ||= args.state.tick_count
 
     case mode
@@ -27,6 +35,8 @@ class Ease
   end
 
   def complete?(args)
+    return false if defer && defer > 0
+
     @start_tick ||= args.state.tick_count
 
     args.state.tick_count >= (@start_tick + @ticks)
@@ -72,4 +82,4 @@ class Ease
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

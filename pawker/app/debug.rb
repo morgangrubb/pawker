@@ -1,4 +1,6 @@
 class Debug
+  include Serializable
+
   def initialize(mode: :running)
     @mode = mode
     @remaining_ticks = nil
@@ -197,4 +199,4 @@ class Debug
 
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

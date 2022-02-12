@@ -1,5 +1,6 @@
 class Rank
   include Comparable
+  include Serializable
 
   RANKS = [:ace, :king, :queen, :jack, :ten, :nine, :eight, :seven, :six, :five, :four, :three, :two]
   NUMERIC = RANKS.reverse.each_with_index.inject({}) { |obj, (k, i)| obj[k] = i; obj }

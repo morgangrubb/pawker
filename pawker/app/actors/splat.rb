@@ -1,5 +1,7 @@
 class Actors
   class Splat
+    include Serializable
+
     def initialize(index:, controller:, **position)
       @index = index
       @controller = controller

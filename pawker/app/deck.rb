@@ -1,4 +1,6 @@
 class Deck
+  include Serializable
+
   CARDS =
     Rank::RANKS.flat_map do |rank|
       Suit::SUITS.map do |suit|
@@ -18,6 +20,10 @@ class Deck
 
   def draw
     @cards.shift
+  end
+
+  def empty?
+    @cards.none?
   end
 
   def pick(*shorts, rank: [], suit: [])
@@ -47,8 +53,8 @@ class Deck
     end
   end
 
-  def pick!(**kwargs)
-    picked = pick(**kwargs)
+  def pick!(*shorts, **kwargs)
+    picked = pick(*shorts, **kwargs)
     @cards -= picked
     picked
   end
@@ -66,4 +72,4 @@ class Deck
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

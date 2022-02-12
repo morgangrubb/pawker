@@ -4,18 +4,23 @@ def tick args
   if args.state.tick_count == 0
 
     # Run tests
-    Screens::RanksTest.new(args).tick(args, nil)
+    Scenes::RanksTest.new(args).tick(args, nil)
 
     # Generate all card sprites
     Deck.generate_render_targets!(args)
 
     # Start the game
-    args.state.game_state = State.new(args)
-    args.state.game_state.start(args, :title)
-    # args.state.game_state.start(args, :hands_test)
+    args.state.scenes ||= []
+    args.state.scenes << Scenes::Title.new(args)
+
+    deck = Deck.new
+    deck.shuffle!
   end
 
-  args.state.game_state.tick(args)
+  args.state.scenes.sort { |scene| scene.stack_order }.reverse.each do |scene|
+    scene.tick(args, self)
+    args.state.scenes.delete(scene) if scene.complete?
+  end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

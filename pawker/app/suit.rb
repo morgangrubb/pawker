@@ -1,4 +1,6 @@
 class Suit
+  include Serializable
+
   SUITS = [:spade, :heart, :diamond, :club]
   SHORT = {
     spade: "S",

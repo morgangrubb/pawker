@@ -1,5 +1,7 @@
 class Actors
   class Reticle
+    include Serializable
+
     attr_sprite
 
     MAX_VELOCITY = 1
@@ -18,6 +20,18 @@ class Actors
 
       @velocity_x = 0
       @velocity_y = 0
+    end
+
+    def serialize
+      { w: @w, h: @h, x: @x, y: @y, angle: @angle, path: @path }
+    end
+
+    def inspect
+      serialize.to_s
+    end
+
+    def to_s
+      serialize.to_s
     end
 
     def ease_to_start!(args, ticks: 60)
@@ -89,4 +103,4 @@ class Actors
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

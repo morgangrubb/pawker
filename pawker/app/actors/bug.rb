@@ -1,5 +1,7 @@
 class Actors
   class Bug
+    include Serializable
+
     POSITION_KEYS = [:x, :y, :angle, :w, :h, :path, :a, :speed, :angle_anchor_x, :angle_anchor_y, :tile_x, :tile_y, :tile_w, :tile_h]
 
     WIDTH = 16
@@ -8,13 +10,11 @@ class Actors
     # TODO: Move this to nokia.rb?
     NOKIA_SCREEN = { w: NOKIA_WIDTH, h: NOKIA_HEIGHT, x: 0, y: 0 }
 
-    attr_accessor :index, :controller, :position, :target, :mode
-    attr_reader :card
+    attr_accessor :index, :controller, :position, :target, :mode, :card
 
-    def initialize(index:, controller:, deck: nil)
+    def initialize(index:, controller:)
       @index = index
       @controller = controller
-      @deck = deck
       @mode = {
         name: :purgatory
       }
@@ -55,7 +55,6 @@ class Actors
           ticks_per_frame: 12 + rand(12).to_i,
           since: args.state.tick_count
         }
-        @card = @deck.draw if @deck
       end
     end
 
@@ -86,11 +85,12 @@ class Actors
       @stop_after_offscreen = stop
     end
 
-    def stop(args)
+    def stop(args, ticks_remaining: nil)
       @position = nil
       @mode = {
-        name: :purgatory
-      }
+        name: :purgatory,
+        ticks_remaining: ticks_remaining
+      }.compact
     end
 
     def stopped?
@@ -106,7 +106,11 @@ class Actors
         #              should_the_index_repeat)
         tile_index = @mode[:since].frame_index(4, @mode[:ticks_per_frame], true)
 
-        @position[:tile_x] = 0 + (tile_index * WIDTH)
+        raise "@mode[:ticks_per_frame] is nil" if @mode[:ticks_per_frame].nil?
+        raise "@mode[:since] is nil" if @mode[:since].nil?
+        # raise "tile_index is nil" if tile_index.nil?
+        raise "WIDTH is nil" if WIDTH.nil?
+        @position[:tile_x] = 0 + ((tile_index || 0) * WIDTH)
         @position[:tile_y] = 0
 
         if @mode[:name] == :readying || @mode[:name] == :meandering
@@ -116,6 +120,14 @@ class Actors
         end
 
         args.nokia.sprites << @position.slice(*POSITION_KEYS)
+
+        if card && args.state.tick_count % 2 == 0
+          # TODO: Put the card behind the bug
+          card.y = @position[:y] - card.h
+          card.x = @position[:x]
+
+          args.nokia.sprites << card
+        end
       end
 
       update_mode(args) unless args.state.debug.paused?
@@ -235,11 +247,23 @@ class Actors
 
       when :walking
         # If off-screen switch to purgatory for a while
-        if !@position.intersect_rect?(NOKIA_SCREEN)
-          stop(args)
-          @mode[:ticks_remaining] = rand(80) unless @stop_after_offscreen
-        end
+        # if offscreen?
+        #   stop(args)
+        #   @mode[:ticks_remaining] = rand(80) unless @stop_after_offscreen
+        # end
+        #
+        # Handle this in the game class so that we can add cards, etc.
       end
+    end
+
+    def walking?
+      @mode[:name] == :walking
+    end
+
+    def offscreen?
+      return true unless @position
+
+      !@position.intersect_rect?(NOKIA_SCREEN)
     end
 
     # This can take quite a few goes to figure out a non-colliding starting
@@ -319,4 +343,4 @@ class Actors
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

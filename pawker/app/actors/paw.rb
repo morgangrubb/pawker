@@ -1,5 +1,7 @@
 class Actors
   class Paw
+    include Serializable
+
     attr_sprite
 
     def initialize
@@ -10,6 +12,18 @@ class Actors
       @angle = 0
       @path = "sprites/paw.png"
       @easing = nil
+    end
+
+    def serialize
+      { w: @w, h: @h, x: @x, y: @y, angle: @angle, path: @path }
+    end
+
+    def inspect
+      serialize.to_s
+    end
+
+    def to_s
+      serialize.to_s
     end
 
     # If the paw is already being rendered somewhere then it isn't available
@@ -78,4 +92,4 @@ class Actors
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()

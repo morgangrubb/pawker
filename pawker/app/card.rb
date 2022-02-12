@@ -1,4 +1,6 @@
 class Card
+  include Serializable
+
   attr_sprite
 
   FONT_PATH = NOKIA_FONT_PATH
@@ -82,4 +84,4 @@ class Card
   end
 end
 
-$gtk.reset(seed: Time.now.to_i)
+$gtk.reset()
