@@ -27,4 +27,11 @@ class Suit
     # Suits aren't ranked in pawker
     0
   end
+
+  def serialize
+    {
+      suit: suit,
+      short: short
+    }
+  end
 end

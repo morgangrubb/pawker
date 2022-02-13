@@ -38,4 +38,12 @@ class Rank
     return 0 if rank == other.rank
     RANKS.index(rank) < RANKS.index(other.rank) ? 1 : -1
   end
+
+  def serialize
+    {
+      rank: rank,
+      short: short,
+      numeric: to_i
+    }
+  end
 end

@@ -63,6 +63,14 @@ module Ranks
     def name
       raise "TODO"
     end
+
+    # def serialize
+    #   {
+    #     name: name,
+    #     hand: hand.cards.map(&:short),
+    #     relevant_cards: @relevant_cards&.map(&:short),
+    #   }
+    # end
   end
 
   class Nothing < Base
@@ -111,7 +119,7 @@ module Ranks
 
       sorted = grouped.values.sort_by { |cards| cards.first.rank }
 
-      @relevant_cards = sorted.reverse.first
+      @relevant_cards = sorted.reverse.first.first(2)
       @valid = true
     end
   end
@@ -171,13 +179,16 @@ module Ranks
 
     def valid?
       return @valid unless @valid.nil?
-      return false if hand.cards.length < 5
+
+      unique_rank = hand.cards.uniq { |card| card.rank.rank }
+
+      return false if unique_rank.length < 5
 
       offset = 0
       found = nil
 
       while true do
-        sorted = hand.cards.uniq { |card| card.rank.rank }.sort.reverse.slice(offset, 5)
+        sorted = unique_rank.sort.reverse.slice(offset, 5)
 
         break if sorted.length < 5
 
