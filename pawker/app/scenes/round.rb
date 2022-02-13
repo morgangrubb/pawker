@@ -28,113 +28,109 @@ module Scenes
       @bugs.start(args)
 
       @complete = false
-      @ticks_remaining = nil
       @interactive = true
+      @teardown = nil
     end
 
     def stack_order
       STACK_ORDER
     end
 
+    def start_summary(args, **kwargs)
+      return if @summary_started
+      @summary_started = true
+
+      Progression.round_summary(args, hand_to_beat: @hand_to_beat, hand: @hand, bonus_card: bonus_card, **kwargs)
+    end
+
+    def start_teardown(args, defer: 120)
+      @teardown ||= Ease.new(ticks: defer)
+    end
+
     def tick(args)
       return unless running?
 
-      puts "* Round#00a"
+      if ticks_elapsed >= 20
+        if @interactive && args.inputs.keyboard.space && args.state.paw.available?
+          # Target the paw on the cursor centre
+          args.state.paw.attack(args, args.state.reticle.centre)
 
-      if !@ticks_remaining.nil? && @ticks_remaining <= 0
-        puts "* Round#00b"
-        advance_phase!
-      elsif @interactive && args.inputs.keyboard.space && args.state.paw.available?
-        puts "* Round#00c"
+          # Splat bugs directly under the reticle
+          @bugs
+            .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
+            .each do |bug|
+              @splats.add(1, **bug.position)
 
-        if @deck.empty? # TODO: This needs to allow targetting the bugs that are still running around
-          @complete = true
-          @interactive = false
-          @ticks_remaining = 300
-          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, bonus_card: bonus_card)
-        end
+              if bug.card
+                @hand.add(bug.card)
+                bug.card = nil
+              end
 
-        puts "* Round#00d"
-
-        # Target the paw on the cursor centre
-        args.state.paw.attack(args, args.state.reticle.centre)
-
-        puts "* Round#000"
-
-        # Splat bugs directly under the reticle
-        @bugs
-          .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
-          .actors.each do |bug|
-            @splats.add(1, **bug.position)
-
-            if bug.card
-              puts "0. Hand to beat: #{@hand_to_beat.inspect}"
-              puts "1. Adding: #{bug.card.short}"
-              puts "2. To: #{@hand.inspect}"
-
-              @hand.add(bug.card)
-
-              puts "3. Found: #{@hand.rank.inspect}"
-              puts "5. Player wins: #{@hand > @hand_to_beat}"
-
-              bug.card = nil
-            end
-
-            if @complete
-              bug.stop(args)
-            else
-              if (card = @deck.draw)
-                bug.start(args) # Reset offscreen
-                bug.card = card
-              else
+              if @complete
                 bug.stop(args)
+              else
+                if (card = @deck.draw)
+                  bug.start(args) # Reset offscreen
+                  bug.card = card
+                else
+                  bug.stop(args)
+                end
               end
             end
+
+          # If we have now won the round, end early
+          if @hand > @hand_to_beat
+            @complete = true
+            @interactive = false
+
+            start_teardown(args, defer: 90)
+            start_summary(args, defer: 60)
           end
 
-        puts "* Round#001"
+          # Find any bugs that need to scatter after the impact
+          scatter_bugs =
+            if @complete
+              @bugs
+            else
+              @bugs
+                .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius * 2) }
+                # .each do |bug|
+                #   if bug.card && !@hand.cards.include?(bug.card)
+                #     @deck.place(bug.card)
+                #     bug.card = nil
+                #   end
+                # end
+            end
 
-        if @hand > @hand_to_beat
-          @complete = true
-          @interactive = false
-          @ticks_remaining = 300
-          args.state.scenes << Scenes::RoundSummary.new(args, hand_to_beat: @hand_to_beat, hand: @hand, bonus_card: bonus_card)
+          # Scatter any bugs who saw this happen
+          scatter_bugs.each do |bug|
+            bug.scatter(args, args.state.reticle.centre)
+            bug.stop_after_offscreen = true if @complete
+          end
         end
-
-        puts "* Round#002"
-
-        scatter_bugs =
-          if @complete
-            @bugs
-          else
-            @bugs.select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius * 2) }
-          end
-
-        puts "* Round#003"
-
-        # Scatter any bugs who saw this happen
-        scatter_bugs.scatter(args, args.state.reticle.centre, stop: @complete)
       end
 
-      puts "* Round#004"
+      if @interactive && @deck.empty?
+        @complete = true # Now wait for all the bugs to leave the screen,
+        @bugs.each { |bug| bug.stop_after_offscreen = true }
+      end
 
-      @ticks_remaining -= 1 if !@ticks_remaining.nil?
+      if @complete && @bugs.all?(&:offscreen?)
+        start_teardown(args, defer: 0)
+        start_summary(args, defer: 0)
+      end
+
+      advance_phase! if @teardown&.complete?(args)
 
       args.state.reticle.update(args)
       args.state.paw.update(args)
 
-      puts "* Round#005"
-
       @splats.render(args)
-
-      puts "* Round#006"
 
       @bugs.render(args)
 
-      puts "* Round#007"
-
       @bugs.filter(&:walking?).filter(&:offscreen?).each do |bug|
-        if @complete
+        if @complete || bug.stop_after_offscreen
           bug.stop(args)
         elsif (card = @deck.draw)
           bug.stop(args, ticks_remaining: rand(80))
@@ -144,15 +140,9 @@ module Scenes
         end
       end
 
-      puts "* Round#008"
-
       args.nokia.sprites << args.state.reticle
 
-      puts "* Round#009"
-
       @hand.tick(args)
-
-      puts "* Round#010"
 
       args.nokia.sprites << args.state.paw
     end

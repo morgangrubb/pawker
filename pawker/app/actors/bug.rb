@@ -10,7 +10,7 @@ class Actors
     # TODO: Move this to nokia.rb?
     NOKIA_SCREEN = { w: NOKIA_WIDTH, h: NOKIA_HEIGHT, x: 0, y: 0 }
 
-    attr_accessor :index, :controller, :position, :target, :mode, :card
+    attr_accessor :index, :controller, :position, :target, :mode, :card, :stop_after_offscreen
 
     def initialize(index:, controller:)
       @index = index
@@ -48,7 +48,9 @@ class Actors
           since: args.state.tick_count
         }
       else
+
         generate_non_colliding_start_position(args)
+
         @mode = {
           name: :readying,
           ticks_remaining: 100 + rand(200).to_i,
@@ -58,7 +60,7 @@ class Actors
       end
     end
 
-    def scatter(args, from_point, stop: false)
+    def scatter(args, from_point)
       return unless @position
 
       @mode = {
@@ -81,8 +83,6 @@ class Actors
         angle: Ease.new(from: @position[:angle], to: angle, ticks: 10),
         speed: Ease.new(from: @position[:speed], to: 80 + rand(70), ticks: 20)
       })
-
-      @stop_after_offscreen = stop
     end
 
     def stop(args, ticks_remaining: nil)
@@ -98,7 +98,7 @@ class Actors
     end
 
     def render(args)
-      calculate(args) #unless args.state.debug.paused?
+      calculate(args)
 
       unless @mode[:name] == :purgatory
         # .frame_index(how_many_frames_in_sprite_sheet,
@@ -106,10 +106,6 @@ class Actors
         #              should_the_index_repeat)
         tile_index = @mode[:since].frame_index(4, @mode[:ticks_per_frame], true)
 
-        raise "@mode[:ticks_per_frame] is nil" if @mode[:ticks_per_frame].nil?
-        raise "@mode[:since] is nil" if @mode[:since].nil?
-        # raise "tile_index is nil" if tile_index.nil?
-        raise "WIDTH is nil" if WIDTH.nil?
         @position[:tile_x] = 0 + ((tile_index || 0) * WIDTH)
         @position[:tile_y] = 0
 
@@ -121,7 +117,7 @@ class Actors
 
         args.nokia.sprites << @position.slice(*POSITION_KEYS)
 
-        if card # && args.state.tick_count % 2 == 0
+        if card
           # TODO: Put the card behind the bug
           card.y = @position[:y] - card.h
           card.x = @position[:x]
@@ -132,7 +128,7 @@ class Actors
         end
       end
 
-      update_mode(args) # unless args.state.debug.paused?
+      update_mode(args)
     end
 
     # TODO: Do a circle collision check from the centre of the bug
@@ -273,6 +269,10 @@ class Actors
       @mode[:name] == :walking
     end
 
+    def readying?
+      @mode[:name] == :readying
+    end
+
     def offscreen?
       return true unless @position
 
@@ -282,11 +282,15 @@ class Actors
     # This can take quite a few goes to figure out a non-colliding starting
     # position but we're just going to be okay with that.
     def generate_non_colliding_start_position(args, wall: nil)
-      @target =
-        while true do
-          target = generate_start_target(args, wall: wall)
-          break target unless controller.collision?(target.slice(*POSITION_KEYS))
-        end
+      # @target =
+      #   while true do
+      #     target = generate_start_target(args, wall: wall)
+      #     break target unless controller.actors.any? { |other| other.index != index && other.collision?(target.slice(*POSITION_KEYS)) }
+      #   end
+
+      @target = generate_start_target(args, wall: wall)
+
+
 
       # Set the starting position with a random starting speed
       @position = @target.slice(*POSITION_KEYS).merge(speed: 10)

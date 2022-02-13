@@ -27,6 +27,10 @@ class Progression
     args.state.scenes << Scenes::Winner.new(args, **kwargs)
   end
 
+  def self.round_summary(args, **kwargs)
+    args.state.scenes << Scenes::RoundSummary.new(args, **kwargs)
+  end
+
   def self.repeat_round(args, **kwargs)
     args.state.round -= 1
     next_round(args, **kwargs)

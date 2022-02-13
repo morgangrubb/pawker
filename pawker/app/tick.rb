@@ -1,11 +1,4 @@
 def tick args
-
-  puts "Starting tick"
-
-  # if $replay_state == :good && !$recording.is_replaying?
-  #   $replay.start "replay.txt"
-  # end
-
   # Game setup on tick 0
   if args.state.tick_count == 0
     # Generate a deck of cards
@@ -21,13 +14,14 @@ def tick args
     Progression.reset!(args)
 
     # Start at a specific level
+    # args.state.lives = 1
     # args.state.round = 0; Progression.next_round(args)
     # args.state.round = 1; Progression.next_round(args)
     # args.state.round = 2; Progression.next_round(args)
     # args.state.round = 3; Progression.next_round(args)
     # args.state.round = 4; Progression.next_round(args)
     # args.state.round = 5; Progression.next_round(args)
-    args.state.round = 6; Progression.next_round(args)
+    # args.state.round = 6; Progression.next_round(args)
     # args.state.round = 7; Progression.next_round(args)
 
     # Start at the round summary screen
@@ -57,25 +51,10 @@ def tick args
     end
   end
 
-  puts "Starting scene loop"
-
   args.state.scenes.sort { |scene| scene.stack_order }.reverse.each do |scene|
-    puts "Running #{scene.class.name}"
     scene.tick_with_defer(args)
     args.state.scenes.delete(scene) if scene.complete?
-    puts "Complete #{scene.class.name}"
   end
-
-  puts "Ending tick"
-# rescue Exception => e
-#   $replay.stop if $recording.is_replaying?
-#   $replay_state = :bad
-#   $gtk.write_file "refactoring.txt", "#{e}\n#{e.backtrace}"
-#   $gtk.notify! "EXCEPTION OCCURRED!!"
-#   puts "#{e}\n#{e.backtrace}"
 end
-
-# $replay_state = :good
-# $gtk.write_file "refactoring.txt", "no exceptions"
 
 $gtk.reset()

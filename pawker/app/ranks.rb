@@ -14,10 +14,7 @@ module Ranks
       FourOfAKind.new(hand),
       StraightFlush.new(hand),
       RoyalFlush.new(hand)
-    ].filter do |rank|
-      puts "   - Checking validity of #{rank}"
-      rank.valid?
-    end
+    ].filter(&:valid?)
   end
 
   def self.best(hand)
@@ -67,13 +64,13 @@ module Ranks
       raise "TODO"
     end
 
-    # def serialize
-    #   {
-    #     name: name,
-    #     hand: hand.cards.map(&:short),
-    #     relevant_cards: @relevant_cards&.map(&:short),
-    #   }
-    # end
+    def serialize
+      {
+        name: name,
+        hand: hand.cards.map(&:short),
+        relevant_cards: @relevant_cards&.map(&:short),
+      }
+    end
   end
 
   class Nothing < Base
@@ -256,8 +253,6 @@ module Ranks
       end
 
       pair = Pair.new(Hand.new(cards: (hand.cards - three_of_a_kind.relevant_cards)))
-
-      puts pair.inspect
 
       unless pair.valid?
         @valid = false

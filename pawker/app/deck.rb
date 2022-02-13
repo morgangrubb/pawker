@@ -74,6 +74,10 @@ class Deck
     picked
   end
 
+  def place(card)
+    @cards << card
+  end
+
   def shuffle!
     @cards.shuffle!
   end

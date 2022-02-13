@@ -4,8 +4,6 @@ class Scene
   attr_reader :phase, :defer, :ticks_elapsed
 
   def initialize(args, defer: nil, **kwargs)
-    puts "******** Starting #{self.class.name} ************"
-
     @phases = [:running, :complete].each
     @phase = @phases.next
     @defer = defer
