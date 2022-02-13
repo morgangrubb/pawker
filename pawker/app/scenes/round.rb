@@ -13,6 +13,8 @@ module Scenes
       @deck = args.state.deck
       @hand_to_beat = hand_to_beat
       @bonus_card = bonus_card
+      @bug_count = args.state.bug_count || 1
+      @bug_speed = args.state.bug_speed || 1
 
       @hand = Hand.new
       @hand.splay!
@@ -22,7 +24,7 @@ module Scenes
       @splats = Actors.new(klass: Actors::Splat)
 
       @bugs = Actors.new(klass: Actors::Bug)
-      @bugs.add(10).each { |bug| bug.card = deck.draw }
+      @bugs.add(@bug_count).each { |bug| bug.card = deck.draw }
       @bugs.start(args)
 
       @complete = false
@@ -84,7 +86,7 @@ module Scenes
           if @complete
             @bugs
           else
-            @bugs.select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius * 4) }
+            @bugs.select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius * 2) }
           end
 
         # Scatter any bugs who saw this happen

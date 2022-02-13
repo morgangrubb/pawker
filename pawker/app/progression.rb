@@ -92,7 +92,36 @@ class Progression
     bonus_card = args.state.deck.top unless args.state.round == 0
     args.state.deck.shuffle!
 
+    args.state.bug_count = bug_count(args)
+    args.state.bug_speed = bug_speed(args)
+
     args.state.scenes << Scenes::Title.new(args, hand_to_beat: hand_to_beat, bonus_card: bonus_card, **kwargs)
+  end
+
+  def self.bug_count(args)
+    case args.state.round
+    when 0
+      3
+    when 1, 2
+      4
+    when 3, 4, 5
+      5
+    when 6, 7
+      6
+    end
+  end
+
+  def self.bug_speed(args)
+    case args.state.round
+    when 0, 1
+      1.0..1.2
+    when 2, 3, 4
+      1.1..1.3
+    when 5, 6
+      1.2..1.4
+    when 7
+      1.2..1.5
+    end
   end
 end
 

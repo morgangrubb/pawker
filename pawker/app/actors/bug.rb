@@ -230,6 +230,13 @@ class Actors
       @target.delete(:speed) if @target[:speed].complete?(args)
     end
 
+    def get_walking_speed(args)
+      lower = (args.state.bug_speed.first * 100).floor
+      upper = (args.state.bug_speed.last * 100).floor
+
+      (rand(upper - lower) + lower) / 100.0
+    end
+
     def update_mode(args)
       case mode[:name]
       when :purgatory
@@ -243,7 +250,7 @@ class Actors
             since: args.state.tick_count
           }
           @target = {
-            speed: Ease.new(from: 0, to: 50 + rand(50).to_i, ticks: 50, mode: :quad)
+            speed: Ease.new(from: 0, to: 50 * get_walking_speed(args), ticks: 50, mode: :quad)
           }
         end
 
@@ -303,17 +310,17 @@ class Actors
     # warning about where they're coming from before they take off.
     def generate_start_target(args, wall: nil)
       random =
-        case wall || [:left, :top, :right, :bottom].sample
+        case wall || [:left, :top, :right].sample # , :bottom
         when :left
           {
             x: -1 * (rand(WIDTH / 2) + WIDTH / 2),
-            y: rand(NOKIA_HEIGHT - HEIGHT) + HEIGHT / 2,
+            y: rand(NOKIA_HEIGHT -  2 * HEIGHT) + HEIGHT,
             angle: 270
           }
 
         when :top
           {
-            x: rand(NOKIA_WIDTH - WIDTH) + WIDTH / 2,
+            x: rand(NOKIA_WIDTH -  2 * WIDTH) + WIDTH,
             y: NOKIA_HEIGHT - rand(WIDTH / 2),
             angle: 180
           }
@@ -321,10 +328,11 @@ class Actors
         when :right
           {
             x: NOKIA_WIDTH - rand(WIDTH / 2),
-            y: rand(NOKIA_HEIGHT - HEIGHT) + HEIGHT / 2,
+            y: rand(NOKIA_HEIGHT - 2 * HEIGHT) + HEIGHT,
             angle: 90
           }
 
+        # Not using this because the cards interfere with the bugs too much
         when :bottom
           {
             x: rand(NOKIA_WIDTH - WIDTH) + WIDTH / 2,
