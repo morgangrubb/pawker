@@ -43,7 +43,7 @@ def tick args
     # args.state.scenes << Scenes::GameOver.new(args)
 
     # Test the game won screen
-    # args.state.scenes << Scenes::Winner.new(args)
+    args.state.scenes << Scenes::Winner.new(args)
 
     # Default entry point for the game
     if args.state.scenes.empty?

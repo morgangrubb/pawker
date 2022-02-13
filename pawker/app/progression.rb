@@ -1,7 +1,7 @@
 class Progression
-  def self.start(args)
+  def self.start(args, **kwargs)
     reset!(args)
-    next_round(args)
+    next_round(args, **kwargs)
   end
 
   def self.reset!(args)

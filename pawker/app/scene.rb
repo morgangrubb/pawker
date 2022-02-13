@@ -42,9 +42,9 @@ class Scene
     tick(args)
   end
 
-  def tick(args)
-    raise "TODO"
-  end
+  # def tick(args)
+  #   raise "TODO"
+  # end
 end
 
 $gtk.reset()
