@@ -70,8 +70,14 @@ module Scenes
         # end
       end
 
-      @wrap_up_timer = Ease.new(ticks: 180)
-      @complete_timer = nil
+      if args.state.lives == 0
+        Progression.game_over(args, defer: 30)
+        @wrap_up_timer = Ease.new(ticks: 0)
+        @complete_timer = Ease.new(ticks: 180)
+      else
+        @wrap_up_timer = Ease.new(ticks: 180)
+        @complete_timer = nil
+      end
     end
 
     # TODO: If losing a life, have a bug come in and carry off the last icon
@@ -105,7 +111,7 @@ module Scenes
           Progression.next_round(args, defer: 40)
         else
           if args.state.lives == 0
-            Progression.game_over(args, defer: 40)
+            # Progression.game_over(args, defer: 40)
           else
             Progression.repeat_round(args, defer: 40)
           end

@@ -42,6 +42,12 @@ class Scene
     tick(args)
   end
 
+  def serialize
+    {
+      name: self.class.name
+    }
+  end
+
   # def tick(args)
   #   raise "TODO"
   # end

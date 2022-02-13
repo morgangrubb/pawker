@@ -10,6 +10,8 @@ module Scenes
       if args.state.round == 0
         @title = SpriteByLine.new(path: "sprites/title.png", h: 14, w: 67, x: -67, y: NOKIA_HEIGHT - 14 - 2, delay: 1)
         @title.ease_x = Ease.new(from: @title.x, to: 2, mode: :out_back, ticks: 60)
+        @paw_print = Sprite.new(path: "sprites/paw-print.png", w: 17, h: 14, x: -17, y: 32, source_x: 0, source_y: 3, source_w: 17, source_h: 14)
+        @paw_print.ease_x = Ease.new(from: @title.x, to: 64, mode: :out_back, ticks: 60)
       end
 
       args.state.paw ||= Actors::Paw.new
@@ -91,6 +93,7 @@ module Scenes
 
           if @title
             @title.ease_x = Ease.new(from: @title.x, to: -67, ticks: 60)
+            @paw_print.ease_x = Ease.new(from: @paw_print.x, to: -17, ticks: 60)
           end
 
           @start_game = true
@@ -116,6 +119,7 @@ module Scenes
 
       @instructions.tick(args)
 
+      @paw_print.tick(args) if @paw_print
       @title.tick(args) if @title
 
       args.state.paw.update(args)

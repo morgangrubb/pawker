@@ -26,7 +26,7 @@ def tick args
 
     # Start at the round summary screen
     # args.state.round = 3
-    # args.state.lives = 3
+    # args.state.lives = 1
     # args.state.scenes << Scenes::RoundSummary.new(args,
     #   hand: Hand.new(cards: args.state.deck.pick("AS", "10D")), # , "AC"
     #   hand_to_beat: Hand.new(cards: args.state.deck.pick("2H", "2S")),
@@ -34,7 +34,7 @@ def tick args
     # )
 
     # Start at the lives scene
-    # args.state.lives = 2
+    # args.state.lives = 1
     # args.state.round = 2
     # Progression.gain_a_life(args, bonus_card: args.state.deck.pick("AS").first)
     # Progression.lose_a_life(args)
@@ -55,6 +55,15 @@ def tick args
     scene.tick_with_defer(args)
     args.state.scenes.delete(scene) if scene.complete?
   end
+
+  # puts args.state.scenes.inspect
+
+  # grouped = args.state.scenes.group_by { |scene| scene.class.name }
+  # if grouped.values.any? { |scenes| scenes.length >= 2 }
+  #   puts "Duplicate scenes detected"
+  #   # puts args.state.scenes.inspect
+  #   raise "boom"
+  # end
 end
 
 $gtk.reset()

@@ -12,7 +12,7 @@ class Actors
 
     attr_accessor :index, :controller, :position, :target, :mode, :card, :stop_after_offscreen
 
-    def initialize(index:, controller:)
+    def initialize(index:, controller: nil)
       @index = index
       @controller = controller
       @mode = {
@@ -35,7 +35,7 @@ class Actors
       end
     end
 
-    def start(args, meander: false)
+    def start(args, meander: false, **kwargs)
       if meander
         generate_non_colliding_start_position(args, wall: :right)
         @position[:y] = (NOKIA_HEIGHT - @position[:h]) * 0.5
@@ -49,7 +49,7 @@ class Actors
         }
       else
 
-        generate_non_colliding_start_position(args)
+        generate_non_colliding_start_position(args, **kwargs)
 
         @mode = {
           name: :readying,
@@ -364,7 +364,8 @@ class Actors
         index: @index,
         card: @card,
         mode: @mode,
-        **(@position || {}).slice(:x, :y, :h, :w, :angle)
+        target: @target,
+        **(@position || {}).slice(:x, :y, :h, :w, :angle, :speed)
       }.compact
     end
   end
