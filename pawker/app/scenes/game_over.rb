@@ -34,6 +34,14 @@ module Scenes
         advance_phase!
       end
 
+      unless new_game_started?
+        if args.state.tick_count % 10 == 0
+          if rand > 0.5
+            args.outputs.sounds << 'sounds/blip4.wav'
+          end
+        end
+      end
+
       @bugs.each do |bug|
         bug.render(args)
 

@@ -2,7 +2,7 @@ devid=migglesnz
 devtitle=Miggles
 gameid=pawker
 gametitle=Pawker
-version=0.9
+version=1.0
 icon=sprites/paw-print.png
 
 # Uncomment the entry below to bytecode compile your Ruby code (Pro License Only)

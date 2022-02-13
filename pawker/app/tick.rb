@@ -34,7 +34,7 @@ def tick args
     # )
 
     # Start at the lives scene
-    # args.state.lives = 1
+    # args.state.lives = 3
     # args.state.round = 2
     # Progression.gain_a_life(args, bonus_card: args.state.deck.pick("AS").first)
     # Progression.lose_a_life(args)

@@ -56,9 +56,12 @@ module Scenes
           args.state.paw.attack(args, args.state.reticle.centre)
 
           # Splat bugs directly under the reticle
+          splatted = 0
           @bugs
             .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
             .each do |bug|
+              splatted += 1
+
               @splats.add(1, **bug.position)
 
               if bug.card
@@ -77,6 +80,12 @@ module Scenes
                 end
               end
             end
+
+          if splatted > 0
+            args.outputs.sounds << 'sounds/hit3.wav'
+          else
+            args.outputs.sounds << 'sounds/blip8.wav'
+          end
 
           # If we have now won the round, end early
           if @hand > @hand_to_beat

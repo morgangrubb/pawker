@@ -25,6 +25,8 @@ module Scenes
 
       @right_star = Sprite.new(path: "sprites/star-border.png", w: 17, h: 16, angle: 0, x: NOKIA_WIDTH, y: @title.y)
       @right_star.ease_x = Ease.new(from: @right_star.x, to: NOKIA_WIDTH - title_final_x - 8, mode: :out_back, ticks: 60, defer: 30)
+
+      args.outputs.sounds << "sounds/bad_melody.wav"
     end
 
     def tick(args)

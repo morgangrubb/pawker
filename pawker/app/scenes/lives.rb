@@ -50,8 +50,13 @@ module Scenes
         @paws.last.ease_x = Ease.new(from: NOKIA_WIDTH, to: @paws.last.x, ticks: 30, mode: :out_back, defer: 90)
         @paws.last.x = NOKIA_WIDTH
         @paws.last.y = 0
+
+        @sound_path = "sounds/good3.wav"
+        @sound_timer = Ease.new(ticks: 90)
       when :lose
         # What do?
+        @sound_path = "sounds/negative1.wav"
+        @sound_timer = Ease.new(ticks: 60)
       end
 
       case direction
@@ -116,6 +121,11 @@ module Scenes
             Progression.repeat_round(args, defer: 40)
           end
         end
+      end
+
+      if @sound_timer&.complete?(args)
+        args.outputs.sounds << @sound_path
+        @sound_timer = nil
       end
 
       if @direction == :lose

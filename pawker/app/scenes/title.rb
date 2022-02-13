@@ -70,6 +70,12 @@ module Scenes
             .select { |bug| bug.exists? && args.geometry.point_inside_circle?(bug.as_centre, args.state.reticle.centre, args.state.reticle.radius) }
 
         if splatted.any?
+          args.outputs.sounds << 'sounds/hit3.wav'
+        else
+          args.outputs.sounds << 'sounds/blip8.wav'
+        end
+
+        if splatted.any?
           args.state.scenes << Scenes::Round.new(args, hand_to_beat: @hand_to_beat, bonus_card: bonus_card)
 
           @interactive = false
