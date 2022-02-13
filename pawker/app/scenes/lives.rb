@@ -63,14 +63,14 @@ module Scenes
         @bonus_card.y = 24
         @bonus_card.ease_x = Ease.new(from: @bonus_card.x, to: (NOKIA_WIDTH - @bonus_card.w) / 2, ticks: 30, mode: :out_back, defer: 30)
       when :lose
-        if args.state.lives > 0
-          text = "The bugs win this\nround\n\nYou'll get them\nnext time"
-          @text = Label.new(x: -1 * NOKIA_WIDTH, y: 21, text: text.upcase, font: NOKIA_FONT_PATH, size_enum: NOKIA_FONT_SM, **DARK_COLOUR_RGB)
-          @text.ease_x = Ease.new(from: @text.x, to: 5, ticks: 60, mode: :out_back)
-        end
+        # if args.state.lives > 0
+        #   text = "The bugs win this\nround\n\nYou'll get them\nnext time"
+        #   @text = Label.new(x: -1 * NOKIA_WIDTH, y: 21, text: text.upcase, font: NOKIA_FONT_PATH, size_enum: NOKIA_FONT_SM, **DARK_COLOUR_RGB)
+        #   @text.ease_x = Ease.new(from: @text.x, to: 5, ticks: 60, mode: :out_back)
+        # end
       end
 
-      @wrap_up_timer = Ease.new(ticks: 300)
+      @wrap_up_timer = Ease.new(ticks: 180)
       @complete_timer = nil
     end
 
@@ -82,7 +82,7 @@ module Scenes
         if @complete_timer.complete?(args)
           advance_phase!
         end
-      elsif @wrap_up_timer&.complete?(args) || (ticks_elapsed > 10 && args.inputs.keyboard.space)
+      elsif @wrap_up_timer&.complete?(args) || (ticks_elapsed > 30 && args.inputs.keyboard.space)
         @wrap_up_timer = nil
 
         @complete_timer = Ease.new(ticks: 60)

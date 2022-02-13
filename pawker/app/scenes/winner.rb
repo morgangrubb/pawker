@@ -1,5 +1,7 @@
 module Scenes
   class Winner < Scene
+    STACK_ORDER = 1
+
     def tick(args)
       args.nokia.labels << {
         x: 11 , y: 10,
@@ -14,6 +16,10 @@ module Scenes
 
         Progression.start(args)
       end
+    end
+
+    def stack_order
+      STACK_ORDER
     end
   end
 end

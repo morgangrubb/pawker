@@ -36,7 +36,6 @@ class SpriteByLine < Sprite
     @ease_x = ease
 
     lines.each_with_index do |line, i|
-      puts "#{i}: #{delay * i}"
       line.ease_x = Ease.new(**ease.serialize, defer: delay * i)
     end
   end

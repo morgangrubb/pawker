@@ -4,7 +4,7 @@ class Actors
 
     attr_sprite
 
-    MAX_VELOCITY = 1
+    MAX_VELOCITY = 1.5
 
     attr_reader :radius, :velocity_x, :velocity_y, :ease_x, :ease_y
 
@@ -12,7 +12,7 @@ class Actors
       @w = 23
       @h = 23
       @path = "sprites/reticle2.png"
-      @radius = 10
+      @radius = 12
 
       # Default to just offscreen
       @x = NOKIA_WIDTH + 1
@@ -53,9 +53,9 @@ class Actors
           if args.inputs.left_right != 0
             args.inputs.left_right
           elsif @velocity_x > 0
-            -1
+            -0.5
           elsif @velocity_x < 0
-            1
+            0.5
           else
             0
           end
@@ -77,9 +77,9 @@ class Actors
           if args.inputs.up_down != 0
             args.inputs.up_down
           elsif @velocity_y > 0
-            -1
+            -0.5
           elsif @velocity_y < 0
-            1
+            0.5
           else
             0
           end

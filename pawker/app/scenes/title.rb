@@ -56,7 +56,7 @@ module Scenes
     def tick(args)
       return unless running?
 
-      if @interactive && args.inputs.keyboard.space && args.state.paw.available?
+      if @interactive && ticks_elapsed >= 30 && args.inputs.keyboard.space && args.state.paw.available?
         # Target the paw on the cursor centre
         args.state.paw.attack(args, args.state.reticle.centre)
 

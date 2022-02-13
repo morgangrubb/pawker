@@ -79,6 +79,11 @@ module Scenes
       rank = Ranks::Pair.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No pair should be found"
 
+      cards = deck.pick("2H", "9C", "8C", "7H", "6C", "10C", "AS", "5D", "8D", "10H", "9D", "10S")
+      rank = Ranks::Pair.new(Hand.new(cards: cards))
+      assert_true rank.valid?, "Pair should be found"
+      assert_equal ["10H", "10S"], rank.relevant_cards.map(&:short).sort
+
       cards = deck.pick(rank: :three, suit: [:diamond, :heart])
       rank_low = Ranks::Pair.new(Hand.new(cards: cards))
       assert_true rank_low.valid?, "Pair of 3H, 3D should be found"
@@ -194,6 +199,13 @@ module Scenes
       cards += deck.pick(rank: :six, suit: :spade)
       rank = Ranks::FullHouse.new(Hand.new(cards: cards))
       assert_false rank.valid?, "No FullHouse should be found"
+
+      cards = deck.pick("AS", "AC", "AH", "KS", "KC", "KH", "QD", "QS")
+      rank = Ranks::FullHouse.new(Hand.new(cards: cards))
+      assert_true rank.valid?, "FullHouse should be found"
+      assert_equal 5, rank.relevant_cards.length
+      assert_equal 0, rank.kickers.length
+      assert_equal ["AC", "AH", "AS", "KH", "KS"], rank.relevant_cards.map(&:short).sort
 
       cards = deck.pick(rank: :two, suit: [:club, :heart, :spade])
       cards += deck.pick(rank: :three, suit: [:diamond, :heart])

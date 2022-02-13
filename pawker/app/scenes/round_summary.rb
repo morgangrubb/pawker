@@ -7,6 +7,12 @@ module Scenes
     def initialize(args, hand:, hand_to_beat:, bonus_card: nil, **kwargs)
       super(args, **kwargs)
 
+      if args.state.round == 7 && hand > hand_to_beat
+        Progression.next_round(args, **kwargs)
+        advance_phase!
+        return
+      end
+
       @hand = hand
       @hand.tuck!
       @hand.x = 1
@@ -48,7 +54,7 @@ module Scenes
       @star.ease_x = Ease.new(from: @star.x, to: ease_x_to, mode: :out_back, ticks: 60, defer: 60)
 
       # 3 seconds to display the success page, then wipe back to title for the next round
-      @ticks_remaining = 600
+      @ticks_remaining = 420
     end
 
     def stack_order
@@ -71,7 +77,7 @@ module Scenes
       return unless running?
 
       if @ticks_remaining
-        @ticks_remaining = 0 if ticks_elapsed >= 10 && args.inputs.keyboard.space
+        @ticks_remaining = 0 if ticks_elapsed >= 30 && args.inputs.keyboard.space
 
         if @ticks_remaining > 0
           @ticks_remaining -= 1
