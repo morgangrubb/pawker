@@ -169,6 +169,10 @@ class Actors
     private
 
     def calculate(args)
+      if args.state.tick_count % 60 == 0 && @index == 0
+        "Puts calculating bug 0"
+      end
+
       case mode[:name]
       when :purgatory
         @mode[:ticks_remaining] -= 1 if @mode[:ticks_remaining]

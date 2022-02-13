@@ -14,7 +14,10 @@ module Ranks
       FourOfAKind.new(hand),
       StraightFlush.new(hand),
       RoyalFlush.new(hand)
-    ].filter(&:valid?)
+    ].filter do |rank|
+      puts "   - Checking validity of #{rank}"
+      rank.valid?
+    end
   end
 
   def self.best(hand)
@@ -253,6 +256,8 @@ module Ranks
       end
 
       pair = Pair.new(Hand.new(cards: (hand.cards - three_of_a_kind.relevant_cards)))
+
+      puts pair.inspect
 
       unless pair.valid?
         @valid = false

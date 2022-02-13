@@ -121,10 +121,17 @@ class Hand
 
     splayed_cards, tucked_cards =
       if splay?
+        # puts "Splay"
         [cards.sort.reverse, []]
       else
+        # puts "Tuck"
         [rank.relevant_cards, rank.kickers]
       end
+
+    # puts "Hand: #{cards.sort.reverse.map(&:short)}"
+    # puts "Rank: #{rank.class.name}"
+    # puts "Splayed: #{splayed_cards.map(&:short)}"
+    # puts "Tucked: #{tucked_cards.map(&:short)}"
 
     # Use this so that if we're tucking a wide card under a narrow card we can
     # push the wide card around a bit.

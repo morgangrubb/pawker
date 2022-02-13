@@ -25,6 +25,7 @@ class Sprite
     end
 
     if ease_angle
+      puts ease_angle.inspect
       @angle = ease_angle.current(args)
       @ease_angle = nil if ease_angle.complete?(args)
     end

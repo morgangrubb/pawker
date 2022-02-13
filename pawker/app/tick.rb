@@ -1,5 +1,7 @@
 def tick args
 
+  puts "Starting tick"
+
   # if $replay_state == :good && !$recording.is_replaying?
   #   $replay.start "replay.txt"
   # end
@@ -25,7 +27,7 @@ def tick args
     # args.state.round = 3; Progression.next_round(args)
     # args.state.round = 4; Progression.next_round(args)
     # args.state.round = 5; Progression.next_round(args)
-    # args.state.round = 6; Progression.next_round(args)
+    args.state.round = 6; Progression.next_round(args)
     # args.state.round = 7; Progression.next_round(args)
 
     # Start at the round summary screen
@@ -55,11 +57,16 @@ def tick args
     end
   end
 
+  puts "Starting scene loop"
+
   args.state.scenes.sort { |scene| scene.stack_order }.reverse.each do |scene|
+    puts "Running #{scene.class.name}"
     scene.tick_with_defer(args)
     args.state.scenes.delete(scene) if scene.complete?
+    puts "Complete #{scene.class.name}"
   end
 
+  puts "Ending tick"
 # rescue Exception => e
 #   $replay.stop if $recording.is_replaying?
 #   $replay_state = :bad

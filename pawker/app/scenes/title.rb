@@ -46,6 +46,8 @@ module Scenes
       @instructions = Label.new(x: 2, y: -48, font: NOKIA_FONT_PATH, size_enum: NOKIA_FONT_SM, text: "Paw\nto\nbeat:".upcase, **LIGHT_COLOUR_RGB)
       @instructions.ease_y = Ease.new(from: @instructions.y, to: @hand_to_beat.h + 6, ticks: 60, defer: 20, mode: :out_back)
 
+      # TODO: Display the bonus card
+
       @interactive = true
     end
 
