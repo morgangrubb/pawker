@@ -179,13 +179,13 @@ module Ranks
       while true do
         sorted = hand.cards.uniq { |card| card.rank.rank }.sort.reverse.slice(offset, 5)
 
+        break if sorted.length < 5
+
         if sorted[0].rank.to_i == sorted[1].rank.to_i + 1 &&
           sorted[1].rank.to_i == sorted[2].rank.to_i + 1 &&
           sorted[2].rank.to_i == sorted[3].rank.to_i + 1 &&
           sorted[3].rank.to_i == sorted[4].rank.to_i + 1
           found = sorted
-          break
-        elsif hand.cards.length - offset <= 5
           break
         else
           offset += 1
